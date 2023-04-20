@@ -116,6 +116,7 @@ int main(void)
 
 	  soilValue = read_Soil(&hadc1);
 	  printf("%d\n", soilValue);
+	  //hej
 	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
