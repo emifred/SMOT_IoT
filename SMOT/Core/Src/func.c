@@ -6,8 +6,9 @@
  */
 #include <string.h>
 #include <stdio.h>
-#include <main.h>
+#include "main.h"
 #include <stm32l4xx_hal_conf.h>
+void delay_us(uint16_t us);
 
 
 float read_Soil(ADC_HandleTypeDef *hadc){
@@ -28,6 +29,19 @@ float read_Soil(ADC_HandleTypeDef *hadc){
 	else
 		return_Value = (1 - value_Soil)*100;
 		return return_Value;
+}
+
+
+
+uint16_t korv(){
+	 uint16_t count=0;
+	 HAL_GPIO_WritePin(GPIOC, trig_Pin, GPIO_PIN_SET);
+	 //delay_us(10);
+	 HAL_GPIO_WritePin(GPIOC, trig_Pin, GPIO_PIN_RESET);
+	 while (HAL_GPIO_ReadPin(GPIOC, echo_Pin)){
+		 count++;
+	 }
+	 return count;
 }
 
 

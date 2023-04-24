@@ -53,7 +53,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void delay_us (uint16_t us);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -71,6 +71,10 @@ void Error_Handler(void);
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
+#define trig_Pin GPIO_PIN_10
+#define trig_GPIO_Port GPIOC
+#define echo_Pin GPIO_PIN_12
+#define echo_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
 
