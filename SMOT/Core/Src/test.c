@@ -8,12 +8,9 @@
 #include <stdbool.h>
 #include <func.h>
 #include <stm32l4xx.h>
-<<<<<<< HEAD
+
 #include <test.h>
 
-=======
-uint8_t testSoil;
->>>>>>> branch 'main' of git@github.com:emifred/SMOT_IoT.git
 
 void Test_Program(){
 <<<<<<< HEAD
@@ -22,14 +19,12 @@ bool moistureFunction = true;
 
 waterLevelFunction = testWaterLevelFunction();
 moistureFunction = testMoistureFunction();
-
-=======
-	while(1)
+while(1)
 	{
 		testSoil = getSoil(&hadc1);
 		HAL_Delay(100);
 	}
->>>>>>> branch 'main' of git@github.com:emifred/SMOT_IoT.git
+
 }
 
 bool testWaterLevelFunction()
