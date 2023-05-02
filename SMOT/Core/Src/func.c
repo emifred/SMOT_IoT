@@ -16,6 +16,8 @@ uint32_t IC_Val1 = 0;
 uint32_t IC_Val2 = 0;
 uint32_t Difference = 0;
 uint8_t Is_First_Captured = 0;  // is the first value captured ?
+uint8_t setMoist;
+uint8_t waterWarning;
 
 
 #define TRIG_PIN GPIO_PIN_9
@@ -93,7 +95,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-uint16_t HCSR04_Read(void)
+uint16_t getWaterLevel(void)
 	{
 		HAL_GPIO_WritePin(TRIG_PORT, TRIG_PIN, GPIO_PIN_SET);  // pull the TRIG pin HIGH
 		delay(10);  // wait for 10 us
@@ -136,4 +138,8 @@ void updateLED()
 		break;
 
 	}
+}
+void setMoisture(uint8_t data)
+{
+	setMoist = data;
 }

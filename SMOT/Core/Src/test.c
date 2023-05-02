@@ -16,7 +16,7 @@ void Test_Program(){
 
 bool testWaterLevelSensor()
 {
-	waterLevel = HCSR04_Read();
+	waterLevel = getWaterLevel();
     if(waterLevel > 0 && waterLevel < 1000)
     {
         return true;
