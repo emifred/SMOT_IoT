@@ -8,17 +8,25 @@
 #include <stdbool.h>
 #include <func.h>
 #include <stm32l4xx.h>
-uint8_t testSoil;
+
+#include <test.h>
+
 
 void Test_Program(){
-	while(1)
+bool waterLevelFunction = false;
+bool moistureFunction = true;
+
+waterLevelFunction = testWaterLevelFunction();
+moistureFunction = testMoistureFunction();
+while(1)
 	{
 		testSoil = getSoil(&hadc1);
 		HAL_Delay(100);
 	}
+
 }
 
-bool testWaterLevelSensor()
+bool testWaterLevelFunction()
 {
 
 	uint8_t waterLevel = getWaterLevel();
@@ -31,7 +39,7 @@ bool testWaterLevelSensor()
     }
 }
 
-bool testWaterMoistureSensor()
+bool testMoistureFunction()
 {
 	uint16_t moisture = getSoil(&hadc1);
     if(moisture > 0 && moisture < 5000)
