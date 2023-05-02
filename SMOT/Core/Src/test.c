@@ -8,16 +8,20 @@
 #include <stdbool.h>
 #include <func.h>
 #include <stm32l4xx.h>
-
+uint8_t testSoil;
 
 void Test_Program(){
-
+	while(1)
+	{
+		testSoil = getSoil(&hadc1);
+		HAL_Delay(100);
+	}
 }
 
 bool testWaterLevelSensor()
 {
 
-	uint8_t waterLevel = HCSR04_Read();
+	uint8_t waterLevel = getWaterLevel();
 
     if(waterLevel > 0 && waterLevel < 1000)
     {
