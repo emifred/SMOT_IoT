@@ -41,7 +41,11 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+extern ADC_HandleTypeDef hadc1;
 
+extern I2C_HandleTypeDef hi2c1;
+
+extern TIM_HandleTypeDef htim1;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -57,24 +61,22 @@ void delay_us (uint16_t us);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define moist_pin_Pin GPIO_PIN_0
-#define moist_pin_GPIO_Port GPIOA
-#define USART_TX_Pin GPIO_PIN_2
-#define USART_TX_GPIO_Port GPIOA
-#define USART_RX_Pin GPIO_PIN_3
-#define USART_RX_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
-#define TMS_Pin GPIO_PIN_13
-#define TMS_GPIO_Port GPIOA
-#define TCK_Pin GPIO_PIN_14
-#define TCK_GPIO_Port GPIOA
-#define trig_Pin GPIO_PIN_10
-#define trig_GPIO_Port GPIOC
-#define echo_Pin GPIO_PIN_12
-#define echo_GPIO_Port GPIOC
+#define MODE_BUTT_Pin GPIO_PIN_0
+#define MODE_BUTT_GPIO_Port GPIOC
+#define SUS_BUTT_Pin GPIO_PIN_1
+#define SUS_BUTT_GPIO_Port GPIOC
+#define PUMP_Pin GPIO_PIN_2
+#define PUMP_GPIO_Port GPIOC
+#define TEMP_HUM_Pin GPIO_PIN_3
+#define TEMP_HUM_GPIO_Port GPIOC
+#define HIGH_LED_Pin GPIO_PIN_1
+#define HIGH_LED_GPIO_Port GPIOA
+#define MED_LED_Pin GPIO_PIN_4
+#define MED_LED_GPIO_Port GPIOA
+#define LOW_LED_Pin GPIO_PIN_0
+#define LOW_LED_GPIO_Port GPIOB
+#define GPIO_Output_Pin GPIO_PIN_9
+#define GPIO_Output_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 
