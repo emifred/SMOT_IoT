@@ -9,5 +9,7 @@
 #define INC_TEST_H_
 
 void Test_Program();
+bool testWaterLevelSensor();
+bool testMoistureFunction();
 
 #endif /* INC_TEST_H_ */
