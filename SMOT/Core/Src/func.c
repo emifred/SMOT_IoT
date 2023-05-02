@@ -27,7 +27,20 @@ uint8_t MED_LED;
 uint8_t HIGH_LED;
 
 
+void setMoisture(uint8_t data)
+{
+	setMoist = data;
+}
 
+void setMoistLed(uint8_t *LED, uint8_t data)
+{
+	*LED = data;
+}
+
+uint8_t getMoistLed(uint8_t *LED)
+{
+	return *LED;
+}
 uint16_t getSoil(ADC_HandleTypeDef *hadc){
 	// Poll ADC1 Perihperal & TimeOut = 1mSec
 	float value_Soil;
@@ -109,13 +122,13 @@ uint8_t ledCase;
 void updateLED()
 {
 	uint8_t soilValue = getSoil(&hadc1);
-	if(soilValue < LOW_LED){
+	if(soilValue < getMoistLed(&LOW_LED)){
 		ledCase = 1;
 	}
-	if(soilValue < MED_LED){
+	if(soilValue < getMoistLed(&MED_LED)){
 			ledCase = 2;
 		}
-	if(soilValue < HIGH_LED){
+	if(soilValue < getMoistLed(&HIGH_LED)){
 			ledCase = 3;
 		}
 
@@ -139,17 +152,4 @@ void updateLED()
 
 	}
 }
-void setMoisture(uint8_t data)
-{
-	setMoist = data;
-}
 
-void setMoistLed(uint8_t *LED, uint8_t data)
-{
-	*LED = data;
-}
-
-uint8_t getMoistLed(uint8_t *LED)
-{
-	return *LED;
-}
