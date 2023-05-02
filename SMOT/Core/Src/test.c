@@ -9,7 +9,7 @@
 #include <func.h>
 #include <test.h>
 #include <stm32l4xx.h>
-uint8_t waterLevel;
+
 
 
 void Test_Program(){
@@ -20,7 +20,7 @@ void Test_Program(){
 
 bool testWaterLevelFunction()
 {
-	waterLevel = HCSR04_Read();
+	uint8_t waterLevel = HCSR04_Read();
     if(waterLevel > 0 && waterLevel < 1000)
     {
         return true;
