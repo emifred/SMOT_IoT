@@ -13,7 +13,6 @@
 
 
 void Test_Program(){
-<<<<<<< HEAD
 bool waterLevelFunction = false;
 bool moistureFunction = true;
 
