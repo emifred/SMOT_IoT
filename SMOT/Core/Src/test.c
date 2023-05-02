@@ -10,13 +10,15 @@
 #include <stm32l4xx.h>
 
 #include <test.h>
-
+uint8_t testSoil;
+bool testWaterLevelFunction();
+bool testMoistureFunction();
 
 void Test_Program(){
 bool waterLevelFunction = false;
 bool moistureFunction = true;
 
-waterLevelFunction = testWaterLevelFunction();
+//waterLevelFunction = testWaterLevelFunction();
 moistureFunction = testMoistureFunction();
 while(1)
 	{
