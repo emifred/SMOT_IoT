@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <func.h>
 #include <stm32l4xx.h>
+#include <test.h>
 
 
 void Test_Program(){
