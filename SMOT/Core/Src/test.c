@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <func.h>
 #include <stm32l4xx.h>
-uint8_t waterLevel;
+
 
 void Test_Program(){
 
@@ -16,7 +16,9 @@ void Test_Program(){
 
 bool testWaterLevelSensor()
 {
-	waterLevel = getWaterLevel();
+
+	uint8_t waterLevel = HCSR04_Read();
+
     if(waterLevel > 0 && waterLevel < 1000)
     {
         return true;
