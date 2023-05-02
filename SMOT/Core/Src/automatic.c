@@ -9,8 +9,7 @@
 /*
 //initializing some variables first time :)
 float iTerm = 0;
-float pTerm = 0;
-int previous_moisture = 0;
+int previous_error = 0;
 int current_moisture = 0;
 int moisture_target; //inställningen som bestämmer hur mycket fukt det skall vara
 float pK = 1; //inställing som bestämmer hur mycket P värdet påverkar slutvärdet
@@ -23,7 +22,8 @@ while(true) {
 	waterPlant();
 }
 */
-/*#include <stdio.h>
+/*
+#include <stdio.h>
 #include <stdbool.h>
 #include <func.h>
 #include <stm32l4xx.h>
@@ -32,7 +32,7 @@ void waterPlant() {
 	if(getWaterLevel() < 4 && current_moisture < moisture_target) { //if water level is below 4 cm and moisture is below target
 		int error = moisture_target - current_moisture;
 		int pTerm = p_koefficient * error
-		iTerm += ((previous_moisture + current_moisture) * 0.5f * time_between_waterings);
+		iTerm += ((previous_error + error) * 0.5f * time_between_waterings);
 
 		if(iTerm > iMax)
 		{
@@ -46,6 +46,8 @@ void waterPlant() {
 		}
 
 		runPump(output);
+
+		previous_error = error;
 		}
 
 }*/
