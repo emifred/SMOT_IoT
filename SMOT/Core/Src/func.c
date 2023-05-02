@@ -22,9 +22,9 @@ uint8_t waterWarning;
 
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
-#define LOW_LED 20
-#define MED_LED 30
-#define HIGH_LED 40
+uint8_t LOW_LED;
+uint8_t MED_LED;
+uint8_t HIGH_LED;
 
 
 
@@ -142,4 +142,14 @@ void updateLED()
 void setMoisture(uint8_t data)
 {
 	setMoist = data;
+}
+
+void setMoistLed(uint8_t *LED, uint8_t data)
+{
+	*LED = data;
+}
+
+uint8_t getMoistLed(uint8_t *LED)
+{
+	return *LED;
 }
