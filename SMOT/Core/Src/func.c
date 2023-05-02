@@ -16,14 +16,19 @@ uint32_t IC_Val1 = 0;
 uint32_t IC_Val2 = 0;
 uint32_t Difference = 0;
 uint8_t Is_First_Captured = 0;  // is the first value captured ?
+uint8_t setMoist;
+uint8_t waterWarning;
 
 
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
+uint8_t LOW_LED;
+uint8_t MED_LED;
+uint8_t HIGH_LED;
 
 
 
-uint16_t readSoil(ADC_HandleTypeDef *hadc){
+uint16_t getSoil(ADC_HandleTypeDef *hadc){
 	// Poll ADC1 Perihperal & TimeOut = 1mSec
 	float value_Soil;
 	uint16_t return_Value;
@@ -90,7 +95,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-uint16_t HCSR04_Read(void)
+uint16_t getWaterLevel(void)
 	{
 		HAL_GPIO_WritePin(TRIG_PORT, TRIG_PIN, GPIO_PIN_SET);  // pull the TRIG pin HIGH
 		delay(10);  // wait for 10 us
@@ -100,3 +105,51 @@ uint16_t HCSR04_Read(void)
 
 		return Distance;
 	}
+uint8_t ledCase;
+void updateLED()
+{
+	uint8_t soilValue = getSoil(&hadc1);
+	if(soilValue < LOW_LED){
+		ledCase = 1;
+	}
+	if(soilValue < MED_LED){
+			ledCase = 2;
+		}
+	if(soilValue < HIGH_LED){
+			ledCase = 3;
+		}
+
+	switch(ledCase)
+	{
+	case 1:
+		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
+		break;
+	case 2:
+		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
+		break;
+	case 3:
+		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
+		break;
+
+	}
+}
+void setMoisture(uint8_t data)
+{
+	setMoist = data;
+}
+
+void setMoistLed(uint8_t *LED, uint8_t data)
+{
+	*LED = data;
+}
+
+uint8_t getMoistLed(uint8_t *LED)
+{
+	return *LED;
+}
