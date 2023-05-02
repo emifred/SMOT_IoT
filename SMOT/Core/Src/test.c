@@ -7,9 +7,11 @@
 
 
 Test_Program(){
+	bool testWaterLevel = testWaterLevelSensor();
+	bool moistureLvel = testMoistureSensor();
+
 
 }
-
 bool testWaterLevelSensor()
 {
     uint8_t waterLevel = HCSR04_Read();
@@ -23,7 +25,7 @@ bool testWaterLevelSensor()
 
 bool testWaterLevelSensor()
 {
-    float moisture = readSoil();
+    uint16_t moisture = readSoil();
     if(moisture > 0 && moisture < 5000)
     {
         return true;
