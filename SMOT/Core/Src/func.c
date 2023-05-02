@@ -20,10 +20,13 @@ uint8_t Is_First_Captured = 0;  // is the first value captured ?
 
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
+#define LOW_LED 20
+#define MED_LED 30
+#define HIGH_LED 40
 
 
 
-uint16_t readSoil(ADC_HandleTypeDef *hadc){
+uint16_t getSoil(ADC_HandleTypeDef *hadc){
 	// Poll ADC1 Perihperal & TimeOut = 1mSec
 	float value_Soil;
 	uint16_t return_Value;
@@ -100,3 +103,37 @@ uint16_t HCSR04_Read(void)
 
 		return Distance;
 	}
+uint8_t ledCase;
+void updateLED()
+{
+	uint8_t soilValue = getSoil(&hadc1);
+	if(soilValue < LOW_LED){
+		ledCase = 1;
+	}
+	if(soilValue < MED_LED){
+			ledCase = 2;
+		}
+	if(soilValue < HIGH_LED){
+			ledCase = 3;
+		}
+
+	switch(ledCase)
+	{
+	case 1:
+		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
+		break;
+	case 2:
+		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
+		break;
+	case 3:
+		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
+		break;
+
+	}
+}
