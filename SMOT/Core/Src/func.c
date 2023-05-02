@@ -153,4 +153,9 @@ void updateLED()
 
 	}
 }
+void runPump (uint8_t time)
+{
+	HAL_GPIO_WritePin(PUMP_GPIO_Port, PUMP_Pin, GPIO_PIN_SET);
+
+}
 
