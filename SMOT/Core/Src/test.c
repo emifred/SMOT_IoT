@@ -13,11 +13,12 @@ uint8_t waterLevel;
 
 
 void Test_Program(){
-	bool waterLevelTest = testWaterLevelSensor();
-	bool moistureLevelTest = testMoistureLevelSensor();
+	bool waterLevelTest = testWaterLevelFunction();
+	bool moistureLevelTest = testMoistureLevelFunction();
 
 }
-bool testWaterLevelSensor()
+
+bool testWaterLevelFunction()
 {
 	waterLevel = HCSR04_Read();
     if(waterLevel > 0 && waterLevel < 1000)
@@ -28,7 +29,7 @@ bool testWaterLevelSensor()
     }
 }
 
-bool testWaterMoistureSensor()
+bool testMoistureLevelFunction()
 {
 
 	uint16_t moisture = readSoil(&hadc1);
