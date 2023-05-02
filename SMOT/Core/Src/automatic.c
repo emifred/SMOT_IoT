@@ -23,20 +23,23 @@ while(true) {
 	waterPlant();
 }
 */
-
+/*#include <stdio.h>
+#include <stdbool.h>
+#include <func.h>
+#include <stm32l4xx.h>
 void waterPlant() {
 	int output = 0;
 	if(getWaterLevel() < 4 && current_moisture < moisture_target) { //if water level is below 4 cm and moisture is below target
 		int error = moisture_target - current_moisture;
 		int pTerm = p_koefficient * error
-		iTerm += ((previous_moisture + current_moisture) * 0.5f * time_between_waterings)
+		iTerm += ((previous_moisture + current_moisture) * 0.5f * time_between_waterings);
 
 		if(iTerm > iMax)
 		{
 			iTerm = iMax;
 		}
 		
-		output = (p_term + I_term) * scalar
+		output = (p_term + I_term) * scalar;
 
 		if(output <= 0 || output > 20) { //kan inte köra pumpen negativa sekunder
 			output = 0
@@ -45,4 +48,4 @@ void waterPlant() {
 		runPump(output);
 		}
 
-}
+}*/
