@@ -6,6 +6,6 @@
  */
 
 
-Test_Program(){
+void Test_Program(){
 
 }
