@@ -23,7 +23,7 @@ uint8_t Is_First_Captured = 0;  // is the first value captured ?
 
 
 
-float read_Soil(ADC_HandleTypeDef *hadc){
+uint16_t readSoil(ADC_HandleTypeDef *hadc){
 	// Poll ADC1 Perihperal & TimeOut = 1mSec
 	float value_Soil;
 	uint16_t return_Value;
