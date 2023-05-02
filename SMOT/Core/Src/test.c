@@ -4,17 +4,22 @@
  *  Created on: Apr 18, 2023
  *      Author: emil
  */
+#include <stdio.h>
+#include <stdbool.h>
+#include <func.h>
+#include <test.h>
+#include <stm32l4xx.h>
+uint8_t waterLevel;
 
 
-Test_Program(){
-	bool testWaterLevel = testWaterLevelSensor();
-	bool moistureLvel = testMoistureSensor();
-
+void Test_Program(){
+	bool waterLevelTest = testWaterLevelSensor();
+	bool moistureLevelTest = testMoistureLevelSensor();
 
 }
 bool testWaterLevelSensor()
 {
-    uint8_t waterLevel = HCSR04_Read();
+	waterLevel = HCSR04_Read();
     if(waterLevel > 0 && waterLevel < 1000)
     {
         return true;
@@ -23,9 +28,10 @@ bool testWaterLevelSensor()
     }
 }
 
-bool testWaterLevelSensor()
+bool testWaterMoistureSensor()
 {
-    uint16_t moisture = readSoil();
+
+	uint16_t moisture = readSoil(&hadc1);
     if(moisture > 0 && moisture < 5000)
     {
         return true;

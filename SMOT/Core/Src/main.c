@@ -25,12 +25,12 @@
 #include <stdio.h>
 #include "func.h"
 #include <stm32l4xx_hal_conf.h>
-#include <i2c-lcd.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#define RUN_TEST_PROGRAM;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -166,36 +166,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-	  distance = HCSR04_Read();
-	  if(distance >=8)
-	  {
-		  HAL_GPIO_WritePin(GPIOC, PUMP_Pin, GPIO_PIN_RESET);
-	  }
-	  HAL_Delay(1000);
-	 /* distance=korv();
-	  printf("%d\n", distance);
-	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
-
-
-
-	  printf("%d\n", soilValue);
-	  //hej
-	  //spegel*/
-
-	  	  /*HCSR04_Read();
-	  	  printf("%d\n", Distance);
-	  	  if(Distance >=8)
-	  		  HAL_GPIO_WritePin(GPIOC, PUMP_Pin, GPIO_PIN_RESET);
-	  	  HAL_Delay(1000);*/
-	  	  //while(Distance < 10){
-	  	//	HAL_GPIO_WritePin(GPIOC, PUMP_Pin, GPIO_PIN_SET);
-	  //		HCSR04_Read();
-	  //	  }
-	  //HAL_GPIO_WritePin(GPIOC, PUMP_Pin, GPIO_PIN_RESET);
-	  //delay(50000);
-	  //HAL_GPIO_WritePin(GPIOC, PUMP_Pin, GPIO_PIN_SET);
-	  //delay(50000); un
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
