@@ -65,6 +65,8 @@ void delay_us (uint16_t us);
 /* Private defines -----------------------------------------------------------*/
 #define MODE_BUTT_Pin GPIO_PIN_0
 #define MODE_BUTT_GPIO_Port GPIOC
+#define SUSPEND_Pin GPIO_PIN_1
+#define SUSPEND_GPIO_Port GPIOC
 #define PUMP_Pin GPIO_PIN_2
 #define PUMP_GPIO_Port GPIOC
 #define TEMP_HUM_Pin GPIO_PIN_3

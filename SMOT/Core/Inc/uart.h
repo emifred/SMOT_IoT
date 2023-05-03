@@ -1,7 +1,7 @@
 #ifndef UART
 #define UART
 
-void uartSend();
-void uartRecieve();
+//void uartSend();
+//void uartRecieve();
 
 #endif

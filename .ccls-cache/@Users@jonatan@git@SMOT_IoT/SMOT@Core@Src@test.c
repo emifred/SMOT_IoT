@@ -19,7 +19,6 @@ void Test_Program(){
     bool moistureTestVar = false;
     bool uartTestVar = false;
 
-
     //waterLevelTestVar = testWaterLevelFunction();
     moistureTestVar = testMoistureLevelFunction();
     for(int i = 0; i < 4; i++)
@@ -34,7 +33,6 @@ void Test_Program(){
         testSoil = getSoil(&hadc1);
         HAL_Delay(100);
     }
-
 
 }
 
@@ -67,7 +65,7 @@ bool testUartSend()
     uint8_t dataToSend[5];
     for(int i = 0; i<5; i++)
     {
-        dataToSend[i] = i+1;
+        dataToSend[i] = i;
     }
     if(HAL_UART_Transmit(&huart1, dataToSend, 5, 2000) == 0x00)
     {
