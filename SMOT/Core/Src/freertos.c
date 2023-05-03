@@ -48,7 +48,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+uint8_t uartDataToSend[5];
+uint8_t currentMoistLevel;
+uint8_t currentWaterLevel;
+uint8_t motorRunning = 0;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -57,12 +60,26 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for myButton */
-osThreadId_t myButtonHandle;
-const osThreadAttr_t myButton_attributes = {
-  .name = "myButton",
+/* Definitions for suspendButton */
+osThreadId_t suspendButtonHandle;
+const osThreadAttr_t suspendButton_attributes = {
+  .name = "suspendButton",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityRealtime,
+};
+/* Definitions for readSensors */
+osThreadId_t readSensorsHandle;
+const osThreadAttr_t readSensors_attributes = {
+  .name = "readSensors",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for modeSelect */
+osThreadId_t modeSelectHandle;
+const osThreadAttr_t modeSelect_attributes = {
+  .name = "modeSelect",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,7 +88,9 @@ const osThreadAttr_t myButton_attributes = {
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
-void StartTask02(void *argument);
+void Suspend(void *argument);
+void readSensor(void *argument);
+void modeSelectButt(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -105,8 +124,14 @@ void MX_FREERTOS_Init(void) {
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of myButton */
-  myButtonHandle = osThreadNew(StartTask02, NULL, &myButton_attributes);
+  /* creation of suspendButton */
+  suspendButtonHandle = osThreadNew(Suspend, NULL, &suspendButton_attributes);
+
+  /* creation of readSensors */
+  readSensorsHandle = osThreadNew(readSensor, NULL, &readSensors_attributes);
+
+  /* creation of modeSelect */
+  modeSelectHandle = osThreadNew(modeSelectButt, NULL, &modeSelect_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -128,34 +153,102 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+	TickType_t xLastWakeTime;
+	const TickType_t xFrequency = 1000;
+	// Initialise the xLastWakeTime variable with the current time.
+	xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
   for(;;)
   {
+	 // Wait for the next cycle.
+	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
+	  uartTransmit();
+	  uartReceive();
+
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
 }
 
-/* USER CODE BEGIN Header_StartTask02 */
+/* USER CODE BEGIN Header_Suspend */
 /**
-* @brief Function implementing the myButton thread.
+* @brief Function implementing the suspendButton thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartTask02 */
-void StartTask02(void *argument)
+/* USER CODE END Header_Suspend */
+void Suspend(void *argument)
 {
-  /* USER CODE BEGIN StartTask02 */
+  /* USER CODE BEGIN Suspend */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END StartTask02 */
+  /* USER CODE END Suspend */
+}
+
+/* USER CODE BEGIN Header_readSensor */
+/**
+* @brief Function implementing the readSensors thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_readSensor */
+void readSensor(void *argument)
+{
+  /* USER CODE BEGIN readSensor */
+	TickType_t xLastWakeTime;
+	const TickType_t xFrequency = 1000;
+	// Initialise the xLastWakeTime variable with the current time.
+	xLastWakeTime = xTaskGetTickCount();
+  /* Infinite loop */
+  for(;;)
+  {
+	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
+	  currentMoistLevel = getSoil(&hadc1);
+	  currentWaterLevel = getWaterLevel();
+	  motorRunning = HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
+    osDelay(1);
+  }
+  /* USER CODE END readSensor */
+}
+
+/* USER CODE BEGIN Header_modeSelectButt */
+/**
+* @brief Function implementing the modeSelect thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_modeSelectButt */
+void modeSelectButt(void *argument)
+{
+  /* USER CODE BEGIN modeSelectButt */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END modeSelectButt */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+void uartTransmit()
+{
 
+    //put data to send in array in correct order
+    uartDataToSend[0] = currentMoistLevel;
+    uartDataToSend[1] = currentWaterLevel;
+    uartDataToSend[5] = motorRunning;
+
+
+    //send water level sensor
+
+}
+void uartReceive()
+{
+
+}
 /* USER CODE END Application */
 
