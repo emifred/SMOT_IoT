@@ -18,7 +18,7 @@ void Test_Program(){
 bool waterLevelFunction = false;
 bool moistureFunction = true;
 
-//waterLevelFunction = testWaterLevelFunction();
+waterLevelFunction = testWaterLevelFunction();
 moistureFunction = testMoistureFunction();
 while(1)
 	{

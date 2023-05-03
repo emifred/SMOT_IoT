@@ -122,14 +122,14 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
  // HAL_ADCEx_Calibration_Start(&hadc1);
+
+
+  	  HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_1);
 #ifdef RUN_TEST_PROGRAM
   	  Test_Program();
 #else
 #endif
 
-  	  HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_1);
-
-  	HAL_GPIO_WritePin(GPIOC, PUMP_Pin, GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Init scheduler */
