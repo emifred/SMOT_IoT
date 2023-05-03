@@ -11,5 +11,6 @@
 void Test_Program();
 bool testWaterLevelFunction();
 bool testMoistureLevelFunction();
+bool testUartSend();
 
 #endif /* INC_TEST_H_ */
