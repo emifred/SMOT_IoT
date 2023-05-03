@@ -46,6 +46,8 @@ extern ADC_HandleTypeDef hadc1;
 extern I2C_HandleTypeDef hi2c1;
 
 extern TIM_HandleTypeDef htim1;
+
+extern UART_HandleTypeDef huart1;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -63,8 +65,6 @@ void delay_us (uint16_t us);
 /* Private defines -----------------------------------------------------------*/
 #define MODE_BUTT_Pin GPIO_PIN_0
 #define MODE_BUTT_GPIO_Port GPIOC
-#define SUS_BUTT_Pin GPIO_PIN_1
-#define SUS_BUTT_GPIO_Port GPIOC
 #define PUMP_Pin GPIO_PIN_2
 #define PUMP_GPIO_Port GPIOC
 #define TEMP_HUM_Pin GPIO_PIN_3

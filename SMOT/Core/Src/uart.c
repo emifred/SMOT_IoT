@@ -15,6 +15,6 @@ void uartTransmit()
     uartDataToSend[5] = motorRunning;
 
     HAL_UART_Transmit(&huart1, uartDataToSend, 5, 1000);
-    //send water level sensor
+
 
 }
