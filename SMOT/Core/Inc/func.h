@@ -16,7 +16,12 @@ void updateLED();
 void setMoisture(uint8_t data);
 void setMoistLed(uint8_t *LED, uint8_t data);
 uint8_t getMoistLed(uint8_t *LED);
+
+void runPump (uint8_t time);
+void stopPump ();
 void calibrateUS();
 uint8_t getWaterPercent();
 void turnOnLed(uint8_t LED);
+
+
 #endif /* INC_FUNC_H_ */

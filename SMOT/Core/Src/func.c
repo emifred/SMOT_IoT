@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <main.h>
+#include <tim.h>
 #include <stm32l4xx.h>
 void delay_us(uint16_t us);
 
@@ -19,6 +20,7 @@ uint8_t Is_First_Captured = 0;  // is the first value captured ?
 uint8_t setMoist;
 uint8_t waterWarning;
 uint8_t emptyWater = 20;
+uint8_t motorRunning = 0;
 
 
 #define TRIG_PIN GPIO_PIN_9
@@ -172,9 +174,23 @@ void updateLED()
 
 void runPump (uint8_t time)
 {
+	HAL_TIM_Base_Start_IT(&htim16);
 	HAL_GPIO_WritePin(PUMP_GPIO_Port, PUMP_Pin, GPIO_PIN_SET);
+	pumpSeconds = time;
+	motorRunning = 1;
 
 }
+void stopPump ()
+{
+	HAL_GPIO_WritePin(PUMP_GPIO_Port, PUMP_Pin, GPIO_PIN_RESET);
+	motorRunning = 0;
+
+}
+
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//}
+
 
 void calibrateUS()
 {

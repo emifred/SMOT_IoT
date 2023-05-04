@@ -31,6 +31,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+extern uint8_t pumpSeconds;
+extern uint8_t pumpTimerCount;
+extern uint8_t motorRunning;
 
 /* USER CODE END Includes */
 
@@ -46,6 +50,8 @@ extern ADC_HandleTypeDef hadc1;
 extern I2C_HandleTypeDef hi2c1;
 
 extern TIM_HandleTypeDef htim1;
+
+extern UART_HandleTypeDef huart1;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
