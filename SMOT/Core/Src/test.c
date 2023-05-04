@@ -19,13 +19,13 @@ void Test_Program(){
     bool moistureTestVar = false;
     bool uartTestVar = false;
 
-
-    //waterLevelTestVar = testWaterLevelFunction();
+    uint8_t waterLevel1 = getWaterLevel();
+    waterLevelTestVar = testWaterLevelFunction();
     moistureTestVar = testMoistureLevelFunction();
     for(int i = 0; i < 4; i++)
     {
     uartTestVar = testUartSend();
-    HAL_Delay(15000);
+    HAL_Delay(1000);
 }
 
     uint8_t testSoil = 255;

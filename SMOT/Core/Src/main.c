@@ -37,7 +37,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define RUN_TEST_PROGRAM
+//#define RUN_TEST_PROGRAM
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -56,21 +56,21 @@ TIM_HandleTypeDef htim1;*/
 
 /* Private variables ---------------------------------------------------------*/
 
-
 /* USER CODE BEGIN PV */
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-
 void MX_FREERTOS_Init(void);
-
 /* USER CODE BEGIN PFP */
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint16_t distance;
+uint8_t pumpSeconds = 1;
+
+uint8_t pumpTimerCount = 0;
 /* USER CODE END 0 */
 
 /**
@@ -108,6 +108,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
  // HAL_ADCEx_Calibration_Start(&hadc1);
 
@@ -187,7 +188,6 @@ void SystemClock_Config(void)
   }
 }
 
-
 /* USER CODE BEGIN 4 */
 int _write(int file, char * ptr, int len)
 {
@@ -203,6 +203,37 @@ int _write(int file, char * ptr, int len)
 }
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM2 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM2) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+  if(htim == &htim16)
+  {
+	  pumpTimerCount++;
+	  if(pumpTimerCount >= pumpSeconds)
+	  {
+		  stopPump();
+		  pumpTimerCount = 0;
+		  HAL_TIM_Base_Stop(&htim16);
+	  }
+  }
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

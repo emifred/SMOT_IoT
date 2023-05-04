@@ -31,6 +31,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+extern uint8_t pumpSeconds;
+extern uint8_t pumpTimerCount;
+extern uint8_t motorRunning;
 
 /* USER CODE END Includes */
 
