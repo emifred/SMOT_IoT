@@ -11,7 +11,7 @@
 #include <main.h>
 uint16_t getSoil(ADC_HandleTypeDef *hadc);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
-uint16_t getWaterLevel(void);
+float getWaterLevel(void);
 void updateLED();
 void setMoisture(uint8_t data);
 void setMoistLed(uint8_t *LED, uint8_t data);

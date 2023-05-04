@@ -113,7 +113,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-uint16_t getWaterLevel(void)
+float getWaterLevel(void)
 	{
 		HAL_GPIO_WritePin(TRIG_PORT, TRIG_PIN, GPIO_PIN_SET);  // pull the TRIG pin HIGH
 		delay(10);  // wait for 10 us
@@ -126,8 +126,8 @@ uint16_t getWaterLevel(void)
 
 uint8_t getWaterPercent()
 {
-	uint8_t waterLevelPercentage;
-	waterLevelPercentage =(emptyWater/(getWaterLevel() -maxWaterLevelCM)) * 100;
+	float waterLevelPercentage;
+	waterLevelPercentage = (1 - ((getWaterLevel()/emptyWater)))*100;
 	return waterLevelPercentage;
 
 }
