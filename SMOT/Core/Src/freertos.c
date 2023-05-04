@@ -185,7 +185,7 @@ void StartDefaultTask(void *argument)
 	uartDataToSend[0] = 254;
 	uartDataToSend[6] = 254;
 	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 1500;
+	const TickType_t xFrequency = 400;
 	// Initialise the xLastWakeTime variable with the current time.
 	xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
@@ -197,6 +197,7 @@ void StartDefaultTask(void *argument)
 	  if(pumpTrigger==1)
 	  {
 		  runPump(1);
+		  //reset all pumpTrigger values
 		  pumpTrigger = 0;
 		  uartRecievedData[2] = 0;
 	  }

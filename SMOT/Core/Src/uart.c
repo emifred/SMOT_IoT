@@ -10,8 +10,8 @@ void uartTransmit(uint8_t* uartDataToSend)
     //put data to send in array in correct order
 
 
-    HAL_UART_Transmit(&huart1, uartDataToSend, 7, 200);
-	//HAL_UART_Transmit_IT(&huart1, uartDataToSend, 7);
+    //HAL_UART_Transmit(&huart1, uartDataToSend, 7, 200);
+	HAL_UART_Transmit_IT(&huart1, uartDataToSend, 7);
 
     //send water level sensor
 
