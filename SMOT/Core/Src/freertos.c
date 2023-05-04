@@ -59,6 +59,8 @@ uint8_t targetMoisture = 0;
 uint8_t pumpTrigger = 0;
 uint8_t test = 1;
 
+void waterPlantTask(void *argument);
+
 
 //uint8_t motorRunning = 0;
 /* USER CODE END Variables */
@@ -98,6 +100,7 @@ const osThreadAttr_t readUartRXBuffe_attributes = {
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for uartRecieveMutex */
+
 osMutexId_t uartRecieveMutexHandle;
 const osMutexAttr_t uartRecieveMutex_attributes = {
   .name = "uartRecieveMutex"
@@ -105,6 +108,21 @@ const osMutexAttr_t uartRecieveMutex_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+osThreadId_t waterPlantHandle;
+
+const osThreadAttr_t waterPlant_attributes = {
+  .name = "waterPlant",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
+osMutexId_t global_mutex_id;
+const osMutexAttr_t Thread_Mutex_attr = {
+  "myThreadMutex",     // human readable mutex name
+  osMutexPrioInherit,  // attr_bits
+  NULL,                // memory for control block
+  0U                   // size for control block
+};
 
 /* USER CODE END FunctionPrototypes */
 
@@ -162,6 +180,7 @@ void MX_FREERTOS_Init(void) {
   readUartRXBuffeHandle = osThreadNew(readUartTask, NULL, &readUartRXBuffe_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+  waterPlantHandle = osThreadNew(waterPlantTask, NULL, &waterPlant_attributes);
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -295,7 +314,9 @@ void readUartTask(void *argument)
 	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
 	  //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
 	  targetMoisture = uartRecievedData[0];
+	  osMutexAcquire(global_mutex_id, osWaitForever);
 	  pumpSeconds = uartRecievedData[1];
+	  osMutexRelease(global_mutex_id);
 	  pumpTrigger = uartRecievedData[2];
 	  //osMutexRelease(uartRecieveMutexHandle);
 
@@ -309,6 +330,70 @@ void readUartTask(void *argument)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	//osMutexRelease(uartRecieveMutexHandle);
+}
+void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float* iTerm, int previous_error);
+
+int testWaterPlant = 0;
+float iTerm = 0;
+void waterPlantTask(void *argument)
+{
+	testWaterPlant = 2;
+	osDelay(5); //waiting abit before starting just in case. :)
+	//initializing some variables
+
+	int previous_error = 0;
+	//int current_moisture = 0; trying to use global instead
+	int moisture_target; //inställningen som bestämmer hur mycket fukt det skall vara
+
+	int time_between_waterings = 5000; //15 min in microseconds
+	TickType_t xLastWakeTime;
+	const TickType_t xFrequency = 5000; //time between waterings = 15 min in miliseconds
+	xLastWakeTime = xTaskGetTickCount();
+	for(;;)
+  	{
+		vTaskDelayUntil( &xLastWakeTime, xFrequency );
+		//writing global variables into locals
+		osMutexAcquire(global_mutex_id, osWaitForever);
+		uint8_t curMoist = currentMoistLevel;
+		uint8_t  waterLevel = currentWaterLevel;
+		//get moisture target from somewhere here to...
+		uint8_t targetMoistureCopy = targetMoisture;
+
+		waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, previous_error);
+		osMutexRelease(global_mutex_id);
+		osDelay(1);
+	}
+}
+
+
+uint8_t output = 0;
+void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float* iTerm, int previous_error) {
+	float pK = 1.0; //inställing som bestämmer hur mycket P värdet påverkar slutvärdet
+		float iK = 0.000005; //inställning som bestämmer hur mycket I värdet påverkar slutvärdet
+		float iMax = 30; //i_max värde så att den inte gör något knäppt
+		float scalar = 4.0; //konverteringsfaktor för att konvertera från output till sekunder pumpande
+		//output;
+
+
+	if (curMoist >= targetMoistureCopy) { //reset iTerm when target reached as it is not needed.
+			*iTerm = 0.0f;
+	}
+
+	if(waterLevel > 4 && curMoist < targetMoistureCopy) { //if water level is below 4 cm and moisture is below target
+		int error = targetMoistureCopy - curMoist;
+		int pTerm = pK * error;
+		*iTerm += ((previous_error + error) * 0.5f * time_between_waterings) * iK;
+		if(*iTerm > iMax)
+		{
+			*iTerm = iMax;
+		}
+		output = (pTerm + *iTerm) * scalar;
+		if(output <= 0 || output > 20000) { //kan inte köra pumpen negativa sekunder och inte för många heller
+			output = 0;
+		}
+		runPump(output);
+		previous_error = error;
+	}
 }
 
 

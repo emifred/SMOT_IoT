@@ -6,17 +6,17 @@
  */
 
 
-
-//#include <stdio.h>
-//#include <stdbool.h>
-//#include <func.h>
-//#include <stm32l4xx.h>
+/*
+#include <stdio.h>
+#include <stdbool.h>
+#include <func.h>
+#include <stm32l4xx.h>
 
 
 //maybe use mutex :(
 
-//#include "cmsis_os2.h"
-/*
+#include "cmsis_os2.h"
+
 osMutexId_t global_mutex_id;
 const osMutexAttr_t Thread_Mutex_attr = {
   "myThreadMutex",     // human readable mutex name
@@ -25,13 +25,13 @@ const osMutexAttr_t Thread_Mutex_attr = {
   0U                   // size for control block
 };
 global_mutex_id = osMutexNew(&Thread_Mutex_attr);
-*/
+
 
 
 
 //trying to make thread code :)
 
-/*
+
 osThreadId_t waterPlantHandle;
 const osThreadAttr_t waterPlant_attributes = {
   .name = "waterPlant",
@@ -70,9 +70,9 @@ void waterPlant(void *argument)
 		waterPlantHelper(curMoist, waterLevel);
 		osDelay(1);
 	}
-*/
 
-/*
+
+
 void waterPlantHelper(int curMoist, int waterLevel) {
 	if (curMoist >= moisture_target) { //reset iTerm when target reached as it is not needed.
 			iTerm = 0;

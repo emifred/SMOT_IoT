@@ -161,6 +161,7 @@ void runPump (uint8_t time)
 {
 	HAL_TIM_Base_Start_IT(&htim16);
 	HAL_GPIO_WritePin(PUMP_GPIO_Port, PUMP_Pin, GPIO_PIN_SET);
+	pumpSeconds = time;
 	motorRunning = 1;
 
 }
