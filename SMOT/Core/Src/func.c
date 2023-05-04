@@ -131,22 +131,6 @@ uint8_t getWaterPercent()
 	return waterLevelPercentage;
 
 }
-
-uint8_t ledCase;
-void updateLED()
-{
-	uint8_t soilValue = getSoil(&hadc1);
-	if(soilValue < getMoistLed(&LOW_LED)){
-		ledCase = 1;
-	}
-	if(soilValue < getMoistLed(&MED_LED)){
-			ledCase = 2;
-		}
-	if(soilValue < getMoistLed(&HIGH_LED)){
-			ledCase = 3;
-		}
-	turnOnLed(ledCase);
-}
 void turnOnLed(uint8_t LED)
 {
 	switch(LED)
@@ -169,6 +153,23 @@ void turnOnLed(uint8_t LED)
 
 		}
 }
+
+uint8_t ledCase;
+void updateLED()
+{
+	uint8_t soilValue = getSoil(&hadc1);
+	if(soilValue < getMoistLed(&LOW_LED)){
+		ledCase = 1;
+	}
+	if(soilValue < getMoistLed(&MED_LED)){
+			ledCase = 2;
+		}
+	if(soilValue < getMoistLed(&HIGH_LED)){
+			ledCase = 3;
+		}
+	turnOnLed(ledCase);
+}
+
 void runPump (uint8_t time)
 {
 	HAL_GPIO_WritePin(PUMP_GPIO_Port, PUMP_Pin, GPIO_PIN_SET);

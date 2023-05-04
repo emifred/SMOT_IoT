@@ -164,6 +164,7 @@ void StartDefaultTask(void *argument)
 	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
 	  uartTransmit();
 	  uartReceive();
+	  updateLED();
 
     osDelay(1);
   }
