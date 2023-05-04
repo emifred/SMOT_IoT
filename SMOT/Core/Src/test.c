@@ -19,6 +19,7 @@ void Test_Program(){
     bool moistureTestVar = false;
     bool uartTestVar = false;
 
+
     uint8_t waterLevel1 = getWaterLevel();
     waterLevelTestVar = testWaterLevelFunction();
     moistureTestVar = testMoistureLevelFunction();
@@ -33,7 +34,9 @@ void Test_Program(){
     {
         testSoil = getSoil(&hadc1);
         HAL_Delay(100);
+        ledTest();
     }
+
 
 
 }
@@ -62,6 +65,7 @@ bool testMoistureLevelFunction()
     }
 }
 
+
 bool testUartSend()
 {
     uint8_t dataToSend[5];
@@ -75,4 +79,12 @@ bool testUartSend()
     }else{
         return false;
     }
-}
+
+    void ledTest(){
+    	turnOnLed(1);
+    	HAL_Delay(1000);
+    	turnOnLed(2);
+    	HAL_Delay(1000);
+    	turnOnLed(3);
+    	HAL_Delay(1000);
+    }

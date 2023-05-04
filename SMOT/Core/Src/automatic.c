@@ -6,7 +6,10 @@
  */
 
 
+
+
 /*
+ *
 #include <stdio.h>
 #include <stdbool.h>
 #include <func.h>
@@ -53,7 +56,9 @@ void waterPlant(void *argument)
 	float iK = 0.05; //inställning som bestämmer hur mycket I värdet påverkar slutvärdet
 	float iMax = 30; //i_max värde så att den inte gör något knäppt
 	float scalar = 0.04; //konverteringsfaktor för att konvertera från output till sekunder pumpande
+
 	int output = 0;
+
 	// int time_between_waterings = 900000; 15 min in microseconds
 	TickType_t xLastWakeTime;
 	const TickType_t xFrequency = 900000; //time between waterings = 15 min in miliseconds
@@ -73,6 +78,7 @@ void waterPlant(void *argument)
 
 
 
+
 void waterPlantHelper(int curMoist, int waterLevel) {
 	if (curMoist >= moisture_target) { //reset iTerm when target reached as it is not needed.
 			iTerm = 0;
@@ -85,7 +91,14 @@ void waterPlantHelper(int curMoist, int waterLevel) {
 		{
 			iTerm = iMax;
 		}
+
+
+
 		output = (pTerm + iTerm) * scalar;
+
+
+
+
 		if(output <= 0 || output > 20) { //kan inte köra pumpen negativa sekunder och inte för många heller
 			output = 0;
 		}

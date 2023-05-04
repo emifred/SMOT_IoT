@@ -212,6 +212,7 @@ void StartDefaultTask(void *argument)
   {
 	 // Wait for the next cycle.
 	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
+
 	  uartTransmit(uartDataToSend);
 	  if(pumpTrigger==1)
 	  {
@@ -222,6 +223,8 @@ void StartDefaultTask(void *argument)
 	  }
 	  //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
 	  uartRecieve(uartRecievedData);
+	  updateLED();
+
 
     osDelay(1);
   }
@@ -265,11 +268,13 @@ void readSensor(void *argument)
   {
 	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
 	  currentMoistLevel = getSoil(&hadc1);
+
 	  uartDataToSend[1] = currentMoistLevel;
 	  currentWaterLevel = getWaterLevel();
 	  uartDataToSend[2] = currentWaterLevel;
 	  motorRunning = (uint8_t) HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
 	  uartDataToSend[5] = motorRunning;
+
     osDelay(1);
   }
   /* USER CODE END readSensor */
