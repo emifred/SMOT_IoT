@@ -26,6 +26,8 @@ const osMutexAttr_t Thread_Mutex_attr = {
   0U                   // size for control block
 };
 
+global_mutex_id = osMutexNew(&Thread_Mutex_attr);
+
 
 */
 
@@ -87,7 +89,7 @@ void waterPlant(void *argument)
 		//get moisture target from somewhere here to...
 		osMutexRelease(global_mutex_id);
 
-		waterPlantHelper();
+		waterPlantHelper(curMoist, waterLevel);
 		osDelay(1);
 	}
 
@@ -95,7 +97,7 @@ void waterPlant(void *argument)
 */
 
 /*
-void waterPlantHelper() {
+void waterPlantHelper(int curMoist, int waterLevel) {
 	if (curMoist >= moisture_target) { //reset iTerm when target reached as it is not needed.
 			iTerm = 0;
 	}
