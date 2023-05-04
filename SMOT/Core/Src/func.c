@@ -18,10 +18,12 @@ uint32_t Difference = 0;
 uint8_t Is_First_Captured = 0;  // is the first value captured ?
 uint8_t setMoist;
 uint8_t waterWarning;
+uint8_t emptyWater = 20;
 
 
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
+#define maxWaterLevelCM 2
 uint8_t LOW_LED;
 uint8_t MED_LED;
 uint8_t HIGH_LED;
@@ -122,6 +124,14 @@ uint16_t getWaterLevel(void)
 		return Distance;
 	}
 
+uint8_t getWaterPercent()
+{
+	uint8_t waterLevelPercentage;
+	waterLevelPercentage =(emptyWater/(getWaterLevel() -maxWaterLevelCM)) * 100;
+	return waterLevelPercentage;
+
+}
+
 uint8_t ledCase;
 void updateLED()
 {
@@ -135,26 +145,29 @@ void updateLED()
 	if(soilValue < getMoistLed(&HIGH_LED)){
 			ledCase = 3;
 		}
+	turnOnLed(ledCase);
+}
+void turnOnLed(uint8_t LED)
+{
+	switch(LED)
+		{
+		case 1:
+			HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
+			break;
+		case 2:
+			HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
+			break;
+		case 3:
+			HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
+			break;
 
-	switch(ledCase)
-	{
-	case 1:
-		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
-		break;
-	case 2:
-		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
-		break;
-	case 3:
-		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
-		break;
-
-	}
+		}
 }
 void runPump (uint8_t time)
 {
@@ -162,3 +175,9 @@ void runPump (uint8_t time)
 
 }
 
+void calibrateUS()
+{
+
+	emptyWater = getWaterLevel() - maxWaterLevelCM;
+
+}

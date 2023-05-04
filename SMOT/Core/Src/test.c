@@ -22,8 +22,9 @@ waterLevelFunction = testWaterLevelFunction();
 moistureFunction = testMoistureFunction();
 while(1)
 	{
-		testSoil = getSoil(&hadc1);
-		HAL_Delay(100);
+		//testSoil = getSoil(&hadc1);
+		//HAL_Delay(100);
+		ledTest();
 	}
 
 }
@@ -50,4 +51,12 @@ bool testMoistureFunction()
     }else{
         return false;
     }
+}
+void ledTest(){
+	turnOnLed(1);
+	HAL_Delay(1000);
+	turnOnLed(2);
+	HAL_Delay(1000);
+	turnOnLed(3);
+	HAL_Delay(1000);
 }

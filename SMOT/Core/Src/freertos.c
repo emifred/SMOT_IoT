@@ -207,7 +207,7 @@ void readSensor(void *argument)
   {
 	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
 	  currentMoistLevel = getSoil(&hadc1);
-	  currentWaterLevel = getWaterLevel();
+	  currentWaterLevel = getWaterPercent();
 	  motorRunning = HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
     osDelay(1);
   }
