@@ -333,7 +333,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   // osMutexRelease(uartRecieveMutexHandle);
 }
-void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float *iTerm, int previous_error);
+void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float *iTerm, int* previous_error);
 
 float iTerm = 0;
 void waterPlantTask(void *argument)
@@ -347,6 +347,7 @@ void waterPlantTask(void *argument)
   TickType_t xLastWakeTime;
   const TickType_t xFrequency = 5000; // time between waterings = 15 min in miliseconds
   xLastWakeTime = xTaskGetTickCount();
+  int* previous_error;
   for (;;)
   {
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
@@ -357,19 +358,19 @@ void waterPlantTask(void *argument)
     uint8_t targetMoistureCopy = targetMoisture;   
     osMutexRelease(global_mutex_id);
 
-    waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, previous_error);
+    waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, &previous_error);
     osDelay(1);
   }
 }
 
 uint8_t output = 0;
-void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float *iTerm, int previous_error)
+void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float *iTerm, int* previous_error)
 {
   float pK = 1.0;      // inställing som bestämmer hur mycket P värdet påverkar slutvärdet
   float iK = 0.000005; // inställning som bestämmer hur mycket I värdet påverkar slutvärdet
   float iMax = 30;     // i_max värde så att den inte gör något knäppt
   float scalar = 4.0;  // konverteringsfaktor för att konvertera från output till sekunder pumpande
-  static int previous_error;
+
   // output;
 
   if (curMoist >= targetMoistureCopy)
@@ -381,7 +382,7 @@ void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_wat
   { // if water level is below 4 cm and moisture is below target
     int error = targetMoistureCopy - curMoist;
     int pTerm = pK * error;
-    *iTerm += ((previous_error + error) * 0.5f * time_between_waterings) * iK;
+    *iTerm += ((*previous_error + error) * 0.5f * time_between_waterings) * iK;
     if (*iTerm > iMax)
     {
       *iTerm = iMax;
@@ -392,7 +393,7 @@ void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_wat
       output = 0;
     }
     runPump(output);
-    previous_error = error;
+    *previous_error = error;
   }
 }
 
