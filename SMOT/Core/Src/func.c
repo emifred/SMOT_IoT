@@ -19,7 +19,7 @@ uint32_t Difference = 0;
 uint8_t Is_First_Captured = 0;  // is the first value captured ?
 uint8_t setMoist;
 uint8_t waterWarning;
-uint8_t emptyWater = 20;
+uint8_t emptyWater = 7;
 uint8_t motorRunning = 0;
 
 
@@ -176,7 +176,13 @@ void runPump (uint8_t time)
 {
 	HAL_TIM_Base_Start_IT(&htim16);
 	HAL_GPIO_WritePin(PUMP_GPIO_Port, PUMP_Pin, GPIO_PIN_SET);
-	pumpSeconds = time;
+    if(manualWatering == 1)
+    {
+	    pumpSeconds = time;
+    }else if(automaticWatering == 1)
+    {
+	    pumpSecondsAutomatic = time;
+    }
 	motorRunning = 1;
 
 }

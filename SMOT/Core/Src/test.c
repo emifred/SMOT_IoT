@@ -79,6 +79,7 @@ bool testUartSend()
     }else{
         return false;
     }
+}
 
     void ledTest(){
     	turnOnLed(1);

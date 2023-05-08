@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -49,9 +49,9 @@
 /* USER CODE BEGIN PM */
 /*ADC_HandleTypeDef hadc1;
 
-I2C_HandleTypeDef hi2c1;
+  I2C_HandleTypeDef hi2c1;
 
-TIM_HandleTypeDef htim1;*/
+  TIM_HandleTypeDef htim1;*/
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -68,7 +68,14 @@ void MX_FREERTOS_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint16_t distance;
+//time value for manual watering
 uint8_t pumpSeconds = 1;
+//time value for automatic watering
+uint8_t pumpSecondsAutomatic = 1;
+//"bool" for manual watering
+uint8_t manualWatering = 0;
+//"bool" for automatic watering
+uint8_t automaticWatering = 0;
 
 uint8_t pumpTimerCount = 0;
 /* USER CODE END 0 */
@@ -81,7 +88,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-	  //char msg[10];
+    //char msg[10];
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -110,12 +117,12 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
- // HAL_ADCEx_Calibration_Start(&hadc1);
+    // HAL_ADCEx_Calibration_Start(&hadc1);
 
 
-  	  HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_1);
+    HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_1);
 #ifdef RUN_TEST_PROGRAM
-  	  Test_Program();
+    Test_Program();
 #else
 #endif
 
@@ -130,12 +137,12 @@ int main(void)
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+    while (1)
+    {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+    }
   /* USER CODE END 3 */
 }
 
@@ -191,14 +198,14 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 int _write(int file, char * ptr, int len)
 {
-	int DataIdx;
+    int DataIdx;
 
     for(DataIdx = 0; DataIdx < len; DataIdx++)
     {
-    	ITM_SendChar(*ptr++);
+        ITM_SendChar(*ptr++);
     }
 
-     return len;
+    return len;
 
 }
 
@@ -221,16 +228,31 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-  if(htim == &htim16)
-  {
-	  pumpTimerCount++;
-	  if(pumpTimerCount >= pumpSeconds)
-	  {
-		  stopPump();
-		  pumpTimerCount = 0;
-		  HAL_TIM_Base_Stop(&htim16);
-	  }
-  }
+    if(htim == &htim16)
+    {
+        pumpTimerCount++;
+        if(manualWatering == 1)
+        {
+            //manual watering
+            if(pumpTimerCount >= pumpSeconds)
+            {
+                stopPump();
+                pumpTimerCount = 0;
+                HAL_TIM_Base_Stop(&htim16);
+                manualWatering = 0;
+            }
+        }else if(manualWatering == 0 && automaticWatering == 1)
+        {
+            //automatic watering
+            if(pumpTimerCount >= pumpSecondsAutomatic)
+            {
+                stopPump();
+                pumpTimerCount = 0;
+                HAL_TIM_Base_Stop(&htim16);
+            }
+
+        }
+    }
 
   /* USER CODE END Callback 1 */
 }
@@ -242,11 +264,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+    /* User can add his own implementation to report the HAL error return state */
+    __disable_irq();
+    while (1)
+    {
+    }
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -261,8 +283,8 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+    /* User can add his own implementation to report the file name and line number,
+ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

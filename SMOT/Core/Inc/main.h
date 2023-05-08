@@ -33,7 +33,10 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 extern uint8_t pumpSeconds;
+extern uint8_t pumpSecondsAutomatic;
 extern uint8_t pumpTimerCount;
+extern uint8_t manualWatering;
+extern uint8_t automaticWatering;
 extern uint8_t motorRunning;
 
 /* USER CODE END Includes */
