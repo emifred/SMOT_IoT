@@ -116,6 +116,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM16_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
     // HAL_ADCEx_Calibration_Start(&hadc1);
 
@@ -208,6 +209,23 @@ int _write(int file, char * ptr, int len)
     return len;
 
 }
+uint8_t count = 1;
+bool state = true;
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if(GPIO_Pin == GPIO_PIN_0 && state == true){
+		turnOnLed(count);
+		count++;
+		HAL_TIM_Base_Start_IT(&htim3);
+		state = false;
+		if(count == 4){
+			count = 1;
+		}
+	}else{
+		__NOP();
+	}
+
+}
 
 /* USER CODE END 4 */
 
@@ -254,6 +272,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
     }
 
+    if(htim == &htim3){
+    	if(HAL_GPIO_ReadPin(MODE_GPIO_Port, MODE_Pin) == GPIO_PIN_RESET){
+    			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_0);
+    			state = true;
+    			HAL_TIM_Base_Stop_IT(&htim3);
+    		}
+    }
   /* USER CODE END Callback 1 */
 }
 

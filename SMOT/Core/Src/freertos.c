@@ -30,6 +30,7 @@
 #include <stdbool.h>
 #include <func.h>
 #include <uart.h>
+#include <test.h>
 #include <stm32l4xx.h>
 /* USER CODE END Includes */
 
@@ -278,6 +279,7 @@ void readSensor(void *argument)
         currentMoistLevel = 4;
 
         currentWaterLevel = getWaterPercent();
+        updateLED();
 
         motorRunning = (uint8_t) HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
 
