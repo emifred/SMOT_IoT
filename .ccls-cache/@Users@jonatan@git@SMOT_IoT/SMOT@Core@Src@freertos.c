@@ -53,8 +53,8 @@
 uint8_t uartDataToSend[7];
 const int BUF_SIZE = 12;
 uint8_t uartRecievedDataBeforeFiltering[12];
-uint8_t uartRecievedData[4];
-uint8_t currentMoistLevel = 0;
+uint8_t uartRecievedData[7];
+uint8_t currentMoistLevel;
 uint8_t currentWaterLevel;
 
 uint8_t targetMoisture = 0;
@@ -205,13 +205,10 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
 
     uartDataToSend[0] = 254;
-    uartDataToSend[1] = 0;
-    uartDataToSend[2] = 0;
-    uartDataToSend[3] = 0;
-    uartDataToSend[5] = 0;
-    uartDataToSend[6] = 254;
+
+    uartDataToSend[6] = 127;
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 400;
+    const TickType_t xFrequency = 1000;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
@@ -221,9 +218,9 @@ void StartDefaultTask(void *argument)
         // Wait for the next cycle.
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
 
-       // osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
+        osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
         uartTransmit(uartDataToSend);
-       // osMutexRelease(uartRecieveMutexHandle);
+        osMutexRelease(uartRecieveMutexHandle);
         uartRecieve(uartRecievedDataBeforeFiltering);
         //uartRecieve(uartRecievedData);
         if(pumpTrigger==1 && motorRunning == 0)
@@ -271,7 +268,7 @@ void readSensor(void *argument)
 {
   /* USER CODE BEGIN readSensor */
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 800;
+    const TickType_t xFrequency = 300;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
@@ -279,7 +276,8 @@ void readSensor(void *argument)
     {
     	test = 8;
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
-        currentMoistLevel = getSoil(&hadc1);
+        /* currentMoistLevel = getSoil(&hadc1); */
+        currentMoistLevel = 4;
 
         currentWaterLevel = getWaterPercent();
 
@@ -326,7 +324,7 @@ void readUartTask(void *argument)
   /* USER CODE BEGIN readUartTask */
 
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 400;
+    const TickType_t xFrequency = 200;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
@@ -383,7 +381,8 @@ void waterPlantTask(void *argument)
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         //writing global variables into locals
         //osMutexAcquire(global_mutex_id, osWaitForever);
-        uint8_t curMoist = currentMoistLevel;
+        uint8_t curMoist;
+        /* curMoist = currentMoistLevel; */
         uint8_t  waterLevel = currentWaterLevel;
         //get moisture target from somewhere here to...
         uint8_t targetMoistureCopy = targetMoisture;
