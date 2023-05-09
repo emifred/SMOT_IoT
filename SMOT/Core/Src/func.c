@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <main.h>
+#include <math.h>
 #include <tim.h>
 #include <stm32l4xx.h>
 void delay_us(uint16_t us);
@@ -45,10 +46,10 @@ uint8_t getMoistLed(uint8_t *LED)
 {
 	return *LED;
 }
-uint16_t getSoil(ADC_HandleTypeDef *hadc){
+uint8_t getSoil(ADC_HandleTypeDef *hadc){
 	// Poll ADC1 Perihperal & TimeOut = 1mSec
 	float value_Soil;
-	uint16_t return_Value;
+	uint8_t return_Value;
 	HAL_ADC_Start(hadc);
 	HAL_ADC_PollForConversion(hadc,100);
 	value_Soil = (HAL_ADC_GetValue(hadc));
@@ -61,7 +62,7 @@ uint16_t getSoil(ADC_HandleTypeDef *hadc){
 		return return_Value;
 	}
 	else{
-		return_Value = (1 - value_Soil)*100;
+		return_Value = (uint8_t) floor((1 - value_Soil)*100);
 		return return_Value;
 	}
 }
