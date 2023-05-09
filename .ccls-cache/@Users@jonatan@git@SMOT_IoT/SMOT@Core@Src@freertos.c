@@ -51,10 +51,10 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 uint8_t uartDataToSend[7];
-const int BUF_SIZE = 14;
-uint8_t uartRecievedDataBeforeFiltering[14];
-uint8_t uartRecievedData[3];
-uint8_t currentMoistLevel;
+const int BUF_SIZE = 12;
+uint8_t uartRecievedDataBeforeFiltering[12];
+uint8_t uartRecievedData[4];
+uint8_t currentMoistLevel = 0;
 uint8_t currentWaterLevel;
 
 uint8_t targetMoisture = 0;
@@ -71,43 +71,42 @@ void uartParser();
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t) osPriorityNormal,
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for suspendButton */
 osThreadId_t suspendButtonHandle;
 const osThreadAttr_t suspendButton_attributes = {
-    .name = "suspendButton",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t) osPriorityRealtime,
+  .name = "suspendButton",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for readSensors */
 osThreadId_t readSensorsHandle;
 const osThreadAttr_t readSensors_attributes = {
-    .name = "readSensors",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t) osPriorityNormal,
+  .name = "readSensors",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for modeSelect */
 osThreadId_t modeSelectHandle;
 const osThreadAttr_t modeSelect_attributes = {
-    .name = "modeSelect",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t) osPriorityNormal,
+  .name = "modeSelect",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for readUartRXBuffe */
 osThreadId_t readUartRXBuffeHandle;
 const osThreadAttr_t readUartRXBuffe_attributes = {
-    .name = "readUartRXBuffe",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t) osPriorityLow,
+  .name = "readUartRXBuffe",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for uartRecieveMutex */
-
 osMutexId_t uartRecieveMutexHandle;
 const osMutexAttr_t uartRecieveMutex_attributes = {
-    .name = "uartRecieveMutex"
+  .name = "uartRecieveMutex"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -139,58 +138,58 @@ void readUartTask(void *argument);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
 void MX_FREERTOS_Init(void) {
-    /* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-    /* USER CODE END Init */
-    /* Create the mutex(es) */
-    /* creation of uartRecieveMutex */
-    uartRecieveMutexHandle = osMutexNew(&uartRecieveMutex_attributes);
+  /* USER CODE END Init */
+  /* Create the mutex(es) */
+  /* creation of uartRecieveMutex */
+  uartRecieveMutexHandle = osMutexNew(&uartRecieveMutex_attributes);
 
-    /* USER CODE BEGIN RTOS_MUTEX */
+  /* USER CODE BEGIN RTOS_MUTEX */
     /* add mutexes, ... */
-    /* USER CODE END RTOS_MUTEX */
+  /* USER CODE END RTOS_MUTEX */
 
-    /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
     /* add semaphores, ... */
-    /* USER CODE END RTOS_SEMAPHORES */
+  /* USER CODE END RTOS_SEMAPHORES */
 
-    /* USER CODE BEGIN RTOS_TIMERS */
+  /* USER CODE BEGIN RTOS_TIMERS */
     /* start timers, add new ones, ... */
-    /* USER CODE END RTOS_TIMERS */
+  /* USER CODE END RTOS_TIMERS */
 
-    /* USER CODE BEGIN RTOS_QUEUES */
+  /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
-    /* USER CODE END RTOS_QUEUES */
+  /* USER CODE END RTOS_QUEUES */
 
-    /* Create the thread(s) */
-    /* creation of defaultTask */
-    defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-    /* creation of suspendButton */
-    suspendButtonHandle = osThreadNew(Suspend, NULL, &suspendButton_attributes);
+  /* creation of suspendButton */
+  suspendButtonHandle = osThreadNew(Suspend, NULL, &suspendButton_attributes);
 
-    /* creation of readSensors */
-    readSensorsHandle = osThreadNew(readSensor, NULL, &readSensors_attributes);
+  /* creation of readSensors */
+  readSensorsHandle = osThreadNew(readSensor, NULL, &readSensors_attributes);
 
-    /* creation of modeSelect */
-    modeSelectHandle = osThreadNew(modeSelectButt, NULL, &modeSelect_attributes);
+  /* creation of modeSelect */
+  modeSelectHandle = osThreadNew(modeSelectButt, NULL, &modeSelect_attributes);
 
-    /* creation of readUartRXBuffe */
-    readUartRXBuffeHandle = osThreadNew(readUartTask, NULL, &readUartRXBuffe_attributes);
+  /* creation of readUartRXBuffe */
+  readUartRXBuffeHandle = osThreadNew(readUartTask, NULL, &readUartRXBuffe_attributes);
 
-    /* USER CODE BEGIN RTOS_THREADS */
+  /* USER CODE BEGIN RTOS_THREADS */
     waterPlantHandle = osThreadNew(waterPlantTask, NULL, &waterPlant_attributes);
     /* add threads, ... */
-    /* USER CODE END RTOS_THREADS */
+  /* USER CODE END RTOS_THREADS */
 
-    /* USER CODE BEGIN RTOS_EVENTS */
+  /* USER CODE BEGIN RTOS_EVENTS */
     /* add events, ... */
-    /* USER CODE END RTOS_EVENTS */
+  /* USER CODE END RTOS_EVENTS */
 
 }
 
@@ -203,9 +202,13 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-    /* USER CODE BEGIN StartDefaultTask */
-    test = 2;
+  /* USER CODE BEGIN StartDefaultTask */
+
     uartDataToSend[0] = 254;
+    uartDataToSend[1] = 0;
+    uartDataToSend[2] = 0;
+    uartDataToSend[3] = 0;
+    uartDataToSend[5] = 0;
     uartDataToSend[6] = 254;
     TickType_t xLastWakeTime;
     const TickType_t xFrequency = 400;
@@ -214,11 +217,15 @@ void StartDefaultTask(void *argument)
     /* Infinite loop */
     for(;;)
     {
+    	test = 2;
         // Wait for the next cycle.
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
 
+       // osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
         uartTransmit(uartDataToSend);
+       // osMutexRelease(uartRecieveMutexHandle);
         uartRecieve(uartRecievedDataBeforeFiltering);
+        //uartRecieve(uartRecievedData);
         if(pumpTrigger==1 && motorRunning == 0)
         {
             runPump(1);
@@ -227,12 +234,12 @@ void StartDefaultTask(void *argument)
             uartRecievedData[2] = 0;
         }
         //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
-        updateLED();
+        //updateLED();
 
 
         osDelay(1);
     }
-    /* USER CODE END StartDefaultTask */
+  /* USER CODE END StartDefaultTask */
 }
 
 /* USER CODE BEGIN Header_Suspend */
@@ -244,13 +251,13 @@ void StartDefaultTask(void *argument)
 /* USER CODE END Header_Suspend */
 void Suspend(void *argument)
 {
-    /* USER CODE BEGIN Suspend */
+  /* USER CODE BEGIN Suspend */
     /* Infinite loop */
     for(;;)
     {
         osDelay(1);
     }
-    /* USER CODE END Suspend */
+  /* USER CODE END Suspend */
 }
 
 /* USER CODE BEGIN Header_readSensor */
@@ -262,26 +269,31 @@ void Suspend(void *argument)
 /* USER CODE END Header_readSensor */
 void readSensor(void *argument)
 {
-    /* USER CODE BEGIN readSensor */
+  /* USER CODE BEGIN readSensor */
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 200;
+    const TickType_t xFrequency = 800;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
     for(;;)
     {
+    	test = 8;
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         currentMoistLevel = getSoil(&hadc1);
 
-        uartDataToSend[1] = currentMoistLevel;
         currentWaterLevel = getWaterPercent();
-        uartDataToSend[2] = currentWaterLevel;
+
         motorRunning = (uint8_t) HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
+
+        osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
+        uartDataToSend[1] = getSoil(&hadc1);
+        uartDataToSend[2] = currentWaterLevel;
         uartDataToSend[5] = motorRunning;
+        osMutexRelease(uartRecieveMutexHandle);
 
         osDelay(1);
     }
-    /* USER CODE END readSensor */
+  /* USER CODE END readSensor */
 }
 
 /* USER CODE BEGIN Header_modeSelectButt */
@@ -293,13 +305,13 @@ void readSensor(void *argument)
 /* USER CODE END Header_modeSelectButt */
 void modeSelectButt(void *argument)
 {
-    /* USER CODE BEGIN modeSelectButt */
+  /* USER CODE BEGIN modeSelectButt */
     /* Infinite loop */
     for(;;)
     {
         osDelay(1);
     }
-    /* USER CODE END modeSelectButt */
+  /* USER CODE END modeSelectButt */
 }
 
 /* USER CODE BEGIN Header_readUartTask */
@@ -311,22 +323,23 @@ void modeSelectButt(void *argument)
 /* USER CODE END Header_readUartTask */
 void readUartTask(void *argument)
 {
-    /* USER CODE BEGIN readUartTask */
-    test = 4;
+  /* USER CODE BEGIN readUartTask */
+
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 200;
+    const TickType_t xFrequency = 400;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
     for(;;)
     {
+    	//test = 4;
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
         uartParser();
         targetMoisture = uartRecievedData[0];
-        osMutexAcquire(global_mutex_id, osWaitForever);
+        //osMutexAcquire(global_mutex_id, osWaitForever);
         pumpSeconds = uartRecievedData[1];
-        osMutexRelease(global_mutex_id);
+        //osMutexRelease(global_mutex_id);
         pumpTrigger = uartRecievedData[2];
         if(pumpTrigger == 1)
         {
@@ -337,7 +350,7 @@ void readUartTask(void *argument)
 
         osDelay(1);
     }
-    /* USER CODE END readUartTask */
+  /* USER CODE END readUartTask */
 }
 
 /* Private application code --------------------------------------------------*/
@@ -366,16 +379,17 @@ void waterPlantTask(void *argument)
     xLastWakeTime = xTaskGetTickCount();
     for(;;)
     {
+    	test = 7;
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         //writing global variables into locals
-        osMutexAcquire(global_mutex_id, osWaitForever);
+        //osMutexAcquire(global_mutex_id, osWaitForever);
         uint8_t curMoist = currentMoistLevel;
         uint8_t  waterLevel = currentWaterLevel;
         //get moisture target from somewhere here to...
         uint8_t targetMoistureCopy = targetMoisture;
 
         waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, previous_error);
-        osMutexRelease(global_mutex_id);
+        //osMutexRelease(global_mutex_id);
         osDelay(1);
     }
 }
@@ -408,47 +422,56 @@ void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_wat
         }
         if(automaticWatering == 1)
         {
-            runPump(output);
+             runPump(output);
+            //runPump(30);
         }
         previous_error = error;
+
     }
+
+
+
 }
 
 
 uint8_t startBlock = 255;
+/* uint8_t endBlock = 255; */
+bool foundStart = false;
+/* bool foundEnd = false; */
 void uartParser()
 {
-    uint8_t startBlock = 255;
-    uint8_t endBlock = 255;
-    bool foundStart = false;
-    bool foundEnd = false;
+    //uint8_t startBlock = 255;
+
+foundStart = false;
+/* foundEnd = false; */
+
     for(int i = 0; i < BUF_SIZE; i++)
     {
         if(uartRecievedDataBeforeFiltering[i] == 254 && !foundStart)
         {
-            startBlock = i;
+            startBlock = i+1;
             foundStart = true;
             break;
         }
     }
-    if(foundStart)
-    {
-        for(int i = startBlock + 1; i < BUF_SIZE; i++)
-        {
-            if(i == startBlock + 6 && uartRecievedDataBeforeFiltering[i] == 254)
-            {
-                endBlock = i;
-                foundEnd = true;
-                break;
-            }
-        }
-    }
+    /* if(foundStart) */
+    /* { */
+    /*     for(int i = startBlock; i < BUF_SIZE; i++) */
+    /*     { */
+    /*         if(i == startBlock + 5 && uartRecievedDataBeforeFiltering[i] == 254) */
+    /*         { */
+    /*             endBlock = i; */
+    /*             foundEnd = true; */
+    /*             break; */
+    /*         } */
+    /*     } */
+    /* } */
 
-    if(foundStart && foundEnd)
+    if(foundStart)
     {
         for(int i = 0; i < BUF_SIZE; i++)
         {
-            uartRecievedData[i] = uartRecievedDataBeforeFiltering[startBlock + i + 1];
+            uartRecievedData[i] = uartRecievedDataBeforeFiltering[startBlock + i];
         }
     }
 }

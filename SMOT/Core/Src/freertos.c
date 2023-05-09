@@ -53,8 +53,8 @@
 uint8_t uartDataToSend[7];
 const int BUF_SIZE = 12;
 uint8_t uartRecievedDataBeforeFiltering[12];
-uint8_t uartRecievedData[3];
-uint8_t currentMoistLevel;
+uint8_t uartRecievedData[4];
+uint8_t currentMoistLevel = 0;
 uint8_t currentWaterLevel;
 
 uint8_t targetMoisture = 0;
@@ -205,9 +205,13 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
 
     uartDataToSend[0] = 254;
-    uartDataToSend[6] = 254;
+    uartDataToSend[1] = 0;
+    uartDataToSend[2] = 0;
+    uartDataToSend[3] = 0;
+    uartDataToSend[5] = 0;
+    uartDataToSend[6] = 127;
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 800;
+    const TickType_t xFrequency = 200;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
@@ -217,9 +221,11 @@ void StartDefaultTask(void *argument)
         // Wait for the next cycle.
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
 
+       // osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
         uartTransmit(uartDataToSend);
-        //uartRecieve(uartRecievedDataBeforeFiltering);
-        uartRecieve(uartRecievedData);
+       // osMutexRelease(uartRecieveMutexHandle);
+        uartRecieve(uartRecievedDataBeforeFiltering);
+        //uartRecieve(uartRecievedData);
         if(pumpTrigger==1 && motorRunning == 0)
         {
             runPump(1);
@@ -228,7 +234,7 @@ void StartDefaultTask(void *argument)
             uartRecievedData[2] = 0;
         }
         //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
-        updateLED();
+        //updateLED();
 
 
         osDelay(1);
@@ -265,20 +271,25 @@ void readSensor(void *argument)
 {
   /* USER CODE BEGIN readSensor */
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 200;
+    const TickType_t xFrequency = 300;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
     for(;;)
     {
+    	test = 8;
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         currentMoistLevel = getSoil(&hadc1);
 
-        uartDataToSend[1] = currentMoistLevel;
         currentWaterLevel = getWaterPercent();
-        uartDataToSend[2] = currentWaterLevel;
+
         motorRunning = (uint8_t) HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
+
+        //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
+        uartDataToSend[1] = getSoil(&hadc1);
+        uartDataToSend[2] = currentWaterLevel;
         uartDataToSend[5] = motorRunning;
+        //osMutexRelease(uartRecieveMutexHandle);
 
         osDelay(1);
     }
@@ -315,21 +326,21 @@ void readUartTask(void *argument)
   /* USER CODE BEGIN readUartTask */
 
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 500;
+    const TickType_t xFrequency = 200;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
     for(;;)
     {
-    	test = 4;
+    	//test = 4;
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
-        //uartParser();
-        targetMoisture = uartRecievedData[1];
+        uartParser();
+        targetMoisture = uartRecievedData[0];
         //osMutexAcquire(global_mutex_id, osWaitForever);
-        pumpSeconds = uartRecievedData[2];
+        pumpSeconds = uartRecievedData[1];
         //osMutexRelease(global_mutex_id);
-        pumpTrigger = uartRecievedData[3];
+        pumpTrigger = uartRecievedData[2];
         if(pumpTrigger == 1)
         {
             manualWatering = 1;
@@ -368,16 +379,17 @@ void waterPlantTask(void *argument)
     xLastWakeTime = xTaskGetTickCount();
     for(;;)
     {
+    	test = 7;
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         //writing global variables into locals
-        osMutexAcquire(global_mutex_id, osWaitForever);
+        //osMutexAcquire(global_mutex_id, osWaitForever);
         uint8_t curMoist = currentMoistLevel;
         uint8_t  waterLevel = currentWaterLevel;
         //get moisture target from somewhere here to...
         uint8_t targetMoistureCopy = targetMoisture;
 
         waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, previous_error);
-        osMutexRelease(global_mutex_id);
+        //osMutexRelease(global_mutex_id);
         osDelay(1);
     }
 }
@@ -410,22 +422,28 @@ void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_wat
         }
         if(automaticWatering == 1)
         {
-            runPump(output);
+             runPump(output);
+            //runPump(30);
         }
         previous_error = error;
+
     }
+
+
+
 }
 
 
 uint8_t startBlock = 255;
+/* uint8_t endBlock = 255; */
 bool foundStart = false;
-bool foundEnd = false;
+/* bool foundEnd = false; */
 void uartParser()
 {
     //uint8_t startBlock = 255;
-    uint8_t endBlock = 255;
+
 foundStart = false;
-foundEnd = false;
+/* foundEnd = false; */
 
     for(int i = 0; i < BUF_SIZE; i++)
     {
@@ -436,20 +454,20 @@ foundEnd = false;
             break;
         }
     }
-    if(foundStart)
-    {
-        for(int i = startBlock; i < BUF_SIZE; i++)
-        {
-            if(i == startBlock + 5 && uartRecievedDataBeforeFiltering[i] == 254)
-            {
-                endBlock = i;
-                foundEnd = true;
-                break;
-            }
-        }
-    }
+    /* if(foundStart) */
+    /* { */
+    /*     for(int i = startBlock; i < BUF_SIZE; i++) */
+    /*     { */
+    /*         if(i == startBlock + 5 && uartRecievedDataBeforeFiltering[i] == 254) */
+    /*         { */
+    /*             endBlock = i; */
+    /*             foundEnd = true; */
+    /*             break; */
+    /*         } */
+    /*     } */
+    /* } */
 
-    if(foundStart && foundEnd)
+    if(foundStart)
     {
         for(int i = 0; i < BUF_SIZE; i++)
         {

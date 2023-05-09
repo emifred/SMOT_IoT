@@ -19,7 +19,8 @@ void uartTransmit(uint8_t* uartDataToSend)
 
 uint8_t* uartRecieve(uint8_t* uartRecievedData)
 {
-	HAL_UART_Receive_IT(&huart1, uartRecievedData, 6);
+	HAL_UART_Receive_IT(&huart1, uartRecievedData, 5);
+	return uartRecievedData;
 	//HAL_UART_Receive(&huart1, uartRecievedData, 3, 200);
 }
 
