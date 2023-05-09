@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * File Name          : freertos.c
-  * Description        : Code for freertos applications
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * File Name          : freertos.c
+ * Description        : Code for freertos applications
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <func.h>
 #include <uart.h>
 #include <stm32l4xx.h>
@@ -50,7 +51,9 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 uint8_t uartDataToSend[7];
-uint8_t uartRecievedData[3];
+const int BUF_SIZE = 12;
+uint8_t uartRecievedDataBeforeFiltering[12];
+uint8_t uartRecievedData[7];
 uint8_t currentMoistLevel;
 uint8_t currentWaterLevel;
 
@@ -58,6 +61,9 @@ uint8_t targetMoisture = 0;
 //uint8_t pumpTime = 0;
 uint8_t pumpTrigger = 0;
 uint8_t test = 1;
+
+void waterPlantTask(void *argument);
+void uartParser();
 
 
 //uint8_t motorRunning = 0;
@@ -98,7 +104,6 @@ const osThreadAttr_t readUartRXBuffe_attributes = {
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for uartRecieveMutex */
-
 osMutexId_t uartRecieveMutexHandle;
 const osMutexAttr_t uartRecieveMutex_attributes = {
   .name = "uartRecieveMutex"
@@ -109,17 +114,17 @@ const osMutexAttr_t uartRecieveMutex_attributes = {
 osThreadId_t waterPlantHandle;
 
 const osThreadAttr_t waterPlant_attributes = {
-  .name = "waterPlant",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "waterPlant",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t) osPriorityNormal,
 };
 
 osMutexId_t global_mutex_id;
 const osMutexAttr_t Thread_Mutex_attr = {
-  "myThreadMutex",     // human readable mutex name
-  osMutexPrioInherit,  // attr_bits
-  NULL,                // memory for control block
-  0U                   // size for control block
+    "myThreadMutex",     // human readable mutex name
+    osMutexPrioInherit,  // attr_bits
+    NULL,                // memory for control block
+    0U                   // size for control block
 };
 
 /* USER CODE END FunctionPrototypes */
@@ -146,19 +151,19 @@ void MX_FREERTOS_Init(void) {
   uartRecieveMutexHandle = osMutexNew(&uartRecieveMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
+    /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
+    /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
+    /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+    /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -178,146 +183,171 @@ void MX_FREERTOS_Init(void) {
   readUartRXBuffeHandle = osThreadNew(readUartTask, NULL, &readUartRXBuffe_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  waterPlantHandle = osThreadNew(waterPlant, NULL, &waterPlant_attributes);
-  /* add threads, ... */
+    waterPlantHandle = osThreadNew(waterPlantTask, NULL, &waterPlant_attributes);
+    /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
+    /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
 
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
 /**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Function implementing the defaultTask thread.
+ * @param  argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-	test = 2;
-	uartDataToSend[0] = 254;
-	uartDataToSend[6] = 254;
-	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 400;
-	// Initialise the xLastWakeTime variable with the current time.
-	xLastWakeTime = xTaskGetTickCount();
-  /* Infinite loop */
-  for(;;)
-  {
-	 // Wait for the next cycle.
-	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
-	  uartTransmit(uartDataToSend);
-	  if(pumpTrigger==1)
-	  {
-		  runPump(1);
-		  //reset all pumpTrigger values
-		  pumpTrigger = 0;
-		  uartRecievedData[2] = 0;
-	  }
-	  //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
-	  uartRecieve(uartRecievedData);
 
-    osDelay(1);
-  }
+    uartDataToSend[0] = 254;
+
+    uartDataToSend[6] = 127;
+    TickType_t xLastWakeTime;
+    const TickType_t xFrequency = 1000;
+    // Initialise the xLastWakeTime variable with the current time.
+    xLastWakeTime = xTaskGetTickCount();
+    /* Infinite loop */
+    for(;;)
+    {
+    	test = 2;
+        // Wait for the next cycle.
+        vTaskDelayUntil( &xLastWakeTime, xFrequency );
+
+        osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
+        uartTransmit(uartDataToSend);
+        osMutexRelease(uartRecieveMutexHandle);
+        uartRecieve(uartRecievedDataBeforeFiltering);
+        //uartRecieve(uartRecievedData);
+        if(pumpTrigger==1 && motorRunning == 0)
+        {
+            runPump(1);
+            //reset all pumpTrigger values
+            pumpTrigger = 0;
+            uartRecievedData[2] = 0;
+        }
+        //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
+        //updateLED();
+
+
+        osDelay(1);
+    }
   /* USER CODE END StartDefaultTask */
 }
 
 /* USER CODE BEGIN Header_Suspend */
 /**
-* @brief Function implementing the suspendButton thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the suspendButton thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_Suspend */
 void Suspend(void *argument)
 {
   /* USER CODE BEGIN Suspend */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+    /* Infinite loop */
+    for(;;)
+    {
+        osDelay(1);
+    }
   /* USER CODE END Suspend */
 }
 
 /* USER CODE BEGIN Header_readSensor */
 /**
-* @brief Function implementing the readSensors thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the readSensors thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_readSensor */
 void readSensor(void *argument)
 {
   /* USER CODE BEGIN readSensor */
-	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 200;
-	// Initialise the xLastWakeTime variable with the current time.
-	xLastWakeTime = xTaskGetTickCount();
-  /* Infinite loop */
-  for(;;)
-  {
-	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
-	  currentMoistLevel = getSoil(&hadc1);
-	  uartDataToSend[1] = currentMoistLevel;
-	  currentWaterLevel = getWaterLevel();
-	  uartDataToSend[2] = currentWaterLevel;
-	  motorRunning = (uint8_t) HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
-	  uartDataToSend[5] = motorRunning;
-    osDelay(1);
-  }
+    TickType_t xLastWakeTime;
+    const TickType_t xFrequency = 300;
+    // Initialise the xLastWakeTime variable with the current time.
+    xLastWakeTime = xTaskGetTickCount();
+    /* Infinite loop */
+    for(;;)
+    {
+    	test = 8;
+        vTaskDelayUntil( &xLastWakeTime, xFrequency );
+        /* currentMoistLevel = getSoil(&hadc1); */
+        currentMoistLevel = 4;
+
+        currentWaterLevel = getWaterPercent();
+
+        motorRunning = (uint8_t) HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
+
+        osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
+        uartDataToSend[1] = getSoil(&hadc1);
+        uartDataToSend[2] = currentWaterLevel;
+        uartDataToSend[5] = motorRunning;
+        osMutexRelease(uartRecieveMutexHandle);
+
+        osDelay(1);
+    }
   /* USER CODE END readSensor */
 }
 
 /* USER CODE BEGIN Header_modeSelectButt */
 /**
-* @brief Function implementing the modeSelect thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the modeSelect thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_modeSelectButt */
 void modeSelectButt(void *argument)
 {
   /* USER CODE BEGIN modeSelectButt */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+    /* Infinite loop */
+    for(;;)
+    {
+        osDelay(1);
+    }
   /* USER CODE END modeSelectButt */
 }
 
 /* USER CODE BEGIN Header_readUartTask */
 /**
-* @brief Function implementing the readUartRXBuffe thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the readUartRXBuffe thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_readUartTask */
 void readUartTask(void *argument)
 {
   /* USER CODE BEGIN readUartTask */
-	test = 4;
-	TickType_t xLastWakeTime;
-		const TickType_t xFrequency = 200;
-		// Initialise the xLastWakeTime variable with the current time.
-		xLastWakeTime = xTaskGetTickCount();
-  /* Infinite loop */
-  for(;;)
-  {
-	  vTaskDelayUntil( &xLastWakeTime, xFrequency );
-	  //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
-	  targetMoisture = uartRecievedData[0];
-	  pumpSeconds = uartRecievedData[1];
-	  pumpTrigger = uartRecievedData[2];
-	  //osMutexRelease(uartRecieveMutexHandle);
 
-    osDelay(1);
-  }
+    TickType_t xLastWakeTime;
+    const TickType_t xFrequency = 200;
+    // Initialise the xLastWakeTime variable with the current time.
+    xLastWakeTime = xTaskGetTickCount();
+    /* Infinite loop */
+    for(;;)
+    {
+    	//test = 4;
+        vTaskDelayUntil( &xLastWakeTime, xFrequency );
+        //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
+        uartParser();
+        targetMoisture = uartRecievedData[0];
+        //osMutexAcquire(global_mutex_id, osWaitForever);
+        pumpSeconds = uartRecievedData[1];
+        //osMutexRelease(global_mutex_id);
+        pumpTrigger = uartRecievedData[2];
+        if(pumpTrigger == 1)
+        {
+            manualWatering = 1;
+        }
+        //osMutexRelease(uartRecieveMutexHandle);
+        automaticWatering = uartRecievedData[3];
+
+        osDelay(1);
+    }
   /* USER CODE END readUartTask */
 }
 
@@ -325,69 +355,124 @@ void readUartTask(void *argument)
 /* USER CODE BEGIN Application */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	//osMutexRelease(uartRecieveMutexHandle);
+    //osMutexRelease(uartRecieveMutexHandle);
 }
-void waterPlantHelper(int curMoist, int waterLevel, int time_between_waterings, int targetMoistureCopy, float iTerm, int previous_error);
+void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float* iTerm, int previous_error);
 
 int testWaterPlant = 0;
-void waterPlant(void *argument)
+float iTerm = 0;
+void waterPlantTask(void *argument)
 {
-	testWaterPlant = 2;
-	osDelay(5); //waiting abit before starting just in case. :)
-	//initializing some variables
-	float iTerm = 0;
-	int previous_error = 0;
-	//int current_moisture = 0; trying to use global instead
-	int moisture_target; //inställningen som bestämmer hur mycket fukt det skall vara
+    testWaterPlant = 2;
+    osDelay(5); //waiting abit before starting just in case. :)
+                //initializing some variables
 
-	int time_between_waterings = 5000; //15 min in microseconds
-	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = 5000; //time between waterings = 15 min in miliseconds
-	xLastWakeTime = xTaskGetTickCount();
-	for(;;)
-  	{
-		vTaskDelayUntil( &xLastWakeTime, xFrequency );
-		//writing global variables into locals
-		osMutexAcquire(global_mutex_id, osWaitForever);
-		int curMoist = currentMoistLevel;
-		int waterLevel = currentWaterLevel;
-		//get moisture target from somewhere here to...
-		uint8_t targetMoistureCopy = targetMoisture;
-		osMutexRelease(global_mutex_id);
-		waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, iTerm, previous_error);
-		osDelay(1);
-	}
+    int previous_error = 0;
+    //int current_moisture = 0; trying to use global instead
+    int moisture_target; //inställningen som bestämmer hur mycket fukt det skall vara
+
+    int time_between_waterings = 5000; //15 min in microseconds
+    TickType_t xLastWakeTime;
+    const TickType_t xFrequency = 5000; //time between waterings = 15 min in miliseconds
+    xLastWakeTime = xTaskGetTickCount();
+    for(;;)
+    {
+    	test = 7;
+        vTaskDelayUntil( &xLastWakeTime, xFrequency );
+        //writing global variables into locals
+        //osMutexAcquire(global_mutex_id, osWaitForever);
+        uint8_t curMoist;
+        /* curMoist = currentMoistLevel; */
+        uint8_t  waterLevel = currentWaterLevel;
+        //get moisture target from somewhere here to...
+        uint8_t targetMoistureCopy = targetMoisture;
+
+        waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, previous_error);
+        //osMutexRelease(global_mutex_id);
+        osDelay(1);
+    }
 }
 
 
+uint8_t output = 0;
+void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float* iTerm, int previous_error) {
+    float pK = 1.0; //inställing som bestämmer hur mycket P värdet påverkar slutvärdet
+    float iK = 0.000005; //inställning som bestämmer hur mycket I värdet påverkar slutvärdet
+    float iMax = 30; //i_max värde så att den inte gör något knäppt
+    float scalar = 4.0; //konverteringsfaktor för att konvertera från output till sekunder pumpande
+                        //output;
 
-void waterPlantHelper(int curMoist, int waterLevel, int time_between_waterings, int targetMoistureCopy, float iTerm, int previous_error) {
-	float pK = 1.0; //inställing som bestämmer hur mycket P värdet påverkar slutvärdet
-		float iK = 0.05; //inställning som bestämmer hur mycket I värdet påverkar slutvärdet
-		float iMax = 30; //i_max värde så att den inte gör något knäppt
-		float scalar = 0.04; //konverteringsfaktor för att konvertera från output till sekunder pumpande
-		int output = 0;
+
+    if (curMoist >= targetMoistureCopy) { //reset iTerm when target reached as it is not needed.
+        *iTerm = 0.0f;
+    }
+
+    if(waterLevel > 4 && curMoist < targetMoistureCopy) { //if water level is below 4 cm and moisture is below target
+        int error = targetMoistureCopy - curMoist;
+        int pTerm = pK * error;
+        *iTerm += ((previous_error + error) * 0.5f * time_between_waterings) * iK;
+        if(*iTerm > iMax)
+        {
+            *iTerm = iMax;
+        }
+        output = (pTerm + *iTerm) * scalar;
+        if(output <= 0 || output > 20000) { //kan inte köra pumpen negativa sekunder och inte för många heller
+            output = 0;
+        }
+        if(automaticWatering == 1)
+        {
+             runPump(output);
+            //runPump(30);
+        }
+        previous_error = error;
+
+    }
 
 
-	if (curMoist >= targetMoistureCopy) { //reset iTerm when target reached as it is not needed.
-			iTerm = 0;
-	}
 
-	if(waterLevel > 4 && curMoist < targetMoistureCopy) { //if water level is below 4 cm and moisture is below target
-		int error = targetMoistureCopy - curMoist;
-		int pTerm = pK * error;
-		iTerm += ((previous_error + error) * 0.5f * time_between_waterings) * iK;
-		if(iTerm > iMax)
-		{
-			iTerm = iMax;
-		}
-		output = (pTerm + iTerm) * scalar;
-		if(output <= 0 || output > 20) { //kan inte köra pumpen negativa sekunder och inte för många heller
-			output = 0;
-		}
-		runPump(output);
-		previous_error = error;
-	}
+}
+
+
+uint8_t startBlock = 255;
+/* uint8_t endBlock = 255; */
+bool foundStart = false;
+/* bool foundEnd = false; */
+void uartParser()
+{
+    //uint8_t startBlock = 255;
+
+foundStart = false;
+/* foundEnd = false; */
+
+    for(int i = 0; i < BUF_SIZE; i++)
+    {
+        if(uartRecievedDataBeforeFiltering[i] == 254 && !foundStart)
+        {
+            startBlock = i+1;
+            foundStart = true;
+            break;
+        }
+    }
+    /* if(foundStart) */
+    /* { */
+    /*     for(int i = startBlock; i < BUF_SIZE; i++) */
+    /*     { */
+    /*         if(i == startBlock + 5 && uartRecievedDataBeforeFiltering[i] == 254) */
+    /*         { */
+    /*             endBlock = i; */
+    /*             foundEnd = true; */
+    /*             break; */
+    /*         } */
+    /*     } */
+    /* } */
+
+    if(foundStart)
+    {
+        for(int i = 0; i < BUF_SIZE; i++)
+        {
+            uartRecievedData[i] = uartRecievedDataBeforeFiltering[startBlock + i];
+        }
+    }
 }
 
 

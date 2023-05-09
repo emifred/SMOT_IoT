@@ -40,7 +40,11 @@ void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
+<<<<<<< HEAD
   huart1.Init.BaudRate = 57600;
+=======
+  huart1.Init.BaudRate = 115200;
+>>>>>>> refs/heads/buggMega
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -85,6 +89,7 @@ void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
+  //huart2.Init.BaudRate = 57600;
 
   /* USER CODE END USART2_Init 2 */
 

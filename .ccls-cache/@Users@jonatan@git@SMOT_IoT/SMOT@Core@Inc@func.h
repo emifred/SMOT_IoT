@@ -9,7 +9,7 @@
 #define INC_FUNC_H_
 #include <stm32l4xx.h>
 #include <main.h>
-uint8_t getSoil(ADC_HandleTypeDef *hadc);
+uint16_t getSoil(ADC_HandleTypeDef *hadc);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 float getWaterLevel(void);
 void updateLED();

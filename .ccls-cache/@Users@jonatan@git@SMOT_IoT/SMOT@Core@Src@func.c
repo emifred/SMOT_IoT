@@ -46,7 +46,7 @@ uint8_t getMoistLed(uint8_t *LED)
 {
 	return *LED;
 }
-uint8_t getSoil(ADC_HandleTypeDef *hadc){
+uint16_t getSoil(ADC_HandleTypeDef *hadc){
 	// Poll ADC1 Perihperal & TimeOut = 1mSec
 	float value_Soil;
 	uint8_t return_Value;
