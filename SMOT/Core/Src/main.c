@@ -78,6 +78,7 @@ uint8_t manualWatering = 0;
 uint8_t automaticWatering = 0;
 
 uint8_t pumpTimerCount = 0;
+
 /* USER CODE END 0 */
 
 /**
@@ -236,11 +237,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             //manual watering
             if(pumpTimerCount >= pumpSeconds)
             {
-                stopPump();
+
                 pumpTimerCount = 0;
                 HAL_TIM_Base_Stop(&htim16);
                 manualWatering = 0;
+
+                stopPump();
+                //HAL_TIM_Base_Start(&htim16);
             }
+            return;
         }else if(manualWatering == 0 && automaticWatering == 1)
         {
             //automatic watering
@@ -250,8 +255,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 pumpTimerCount = 0;
                 HAL_TIM_Base_Stop(&htim16);
             }
-
+            return;
         }
+        stopPump();
+        pumpTimerCount = 0;
+        HAL_TIM_Base_Stop(&htim16);
     }
 
   /* USER CODE END Callback 1 */

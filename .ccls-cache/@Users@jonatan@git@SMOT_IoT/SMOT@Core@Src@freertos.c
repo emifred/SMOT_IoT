@@ -206,7 +206,7 @@ void StartDefaultTask(void *argument)
 
     uartDataToSend[6] = 127;
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 1000;
+    const TickType_t xFrequency = 200;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
@@ -221,12 +221,12 @@ void StartDefaultTask(void *argument)
         osMutexRelease(uartRecieveMutexHandle);
         uartRecieve(uartRecievedDataBeforeFiltering);
         //uartRecieve(uartRecievedData);
-        if(pumpTrigger==1 && motorRunning == 0)
+        if(pumpTrigger == 1 && motorRunning == 0 && manualWatering == 1)
         {
-            runPump(1);
+            runPump(pumpSeconds);
             //reset all pumpTrigger values
-            pumpTrigger = 0;
-            uartRecievedData[2] = 0;
+            //pumpTrigger = 0;
+            //uartRecievedData[2] = 0;
         }
         //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
         updateLED();
@@ -325,6 +325,7 @@ void readUartTask(void *argument)
     const TickType_t xFrequency = 200;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
+    bool readyForTrigger = true;
     /* Infinite loop */
     for(;;)
     {
@@ -337,10 +338,19 @@ void readUartTask(void *argument)
         pumpSeconds = uartRecievedData[1];
         //osMutexRelease(global_mutex_id);
         pumpTrigger = uartRecievedData[2];
-        if(pumpTrigger == 1)
+        if(pumpTrigger == 1 && readyForTrigger)
         {
             manualWatering = 1;
         }
+        if(pumpTrigger == 1)
+        {
+            readyForTrigger = false;
+        }else if(pumpTrigger == 0 && !motorRunning && manualWatering == 0)
+        {
+            readyForTrigger = true;
+        }
+
+        /* if(pumpTrigger == 1 && !motorRunning) */
         //osMutexRelease(uartRecieveMutexHandle);
         automaticWatering = uartRecievedData[3];
 
@@ -384,7 +394,7 @@ void waterPlantTask(void *argument)
     uint8_t targetMoistureCopy = targetMoisture;   
     osMutexRelease(global_mutex_id);
 
-    if(automaticWatering)
+    if(automaticWatering && !manualWatering)
     {
         waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, &previous_error);
     }
