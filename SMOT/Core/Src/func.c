@@ -46,9 +46,10 @@ uint8_t getMoistLed(uint8_t *LED)
 {
 	return *LED;
 }
+float value_Soil;
 uint8_t getSoil(ADC_HandleTypeDef *hadc){
 	// Poll ADC1 Perihperal & TimeOut = 1mSec
-	float value_Soil;
+
 	uint8_t return_Value;
 	HAL_ADC_Start(hadc);
 	HAL_ADC_PollForConversion(hadc,100);
@@ -56,13 +57,17 @@ uint8_t getSoil(ADC_HandleTypeDef *hadc){
 	if(value_Soil > 4023){
 		value_Soil = 4023;
 	}
-	value_Soil = value_Soil/4023;
+	//value_Soil = value_Soil/4023;
+	value_Soil = value_Soil - 1600;
+	value_Soil *= (-0.11);
+	value_Soil += 108;
 	if(value_Soil == 0){
 		return_Value = 100;
 		return return_Value;
 	}
 	else{
-		return_Value = (uint8_t) floor((1 - value_Soil)*100);
+		//return_Value = (uint8_t) floor((1 - value_Soil)*100);
+		return_Value = value_Soil;
 		return return_Value;
 	}
 }

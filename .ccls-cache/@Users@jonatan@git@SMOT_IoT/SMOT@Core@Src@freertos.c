@@ -58,56 +58,54 @@ uint8_t currentMoistLevel;
 uint8_t currentWaterLevel;
 
 uint8_t targetMoisture = 0;
-//uint8_t pumpTime = 0;
+// uint8_t pumpTime = 0;
 uint8_t pumpTrigger = 0;
 uint8_t test = 1;
 
 void waterPlantTask(void *argument);
 void uartParser();
 
-
-//uint8_t motorRunning = 0;
+// uint8_t motorRunning = 0;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "defaultTask",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for suspendButton */
 osThreadId_t suspendButtonHandle;
 const osThreadAttr_t suspendButton_attributes = {
-  .name = "suspendButton",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityRealtime,
+    .name = "suspendButton",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityRealtime,
 };
 /* Definitions for readSensors */
 osThreadId_t readSensorsHandle;
 const osThreadAttr_t readSensors_attributes = {
-  .name = "readSensors",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "readSensors",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for modeSelect */
 osThreadId_t modeSelectHandle;
 const osThreadAttr_t modeSelect_attributes = {
-  .name = "modeSelect",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "modeSelect",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for readUartRXBuffe */
 osThreadId_t readUartRXBuffeHandle;
 const osThreadAttr_t readUartRXBuffe_attributes = {
-  .name = "readUartRXBuffe",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+    .name = "readUartRXBuffe",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityLow,
 };
 /* Definitions for uartRecieveMutex */
 osMutexId_t uartRecieveMutexHandle;
 const osMutexAttr_t uartRecieveMutex_attributes = {
-  .name = "uartRecieveMutex"
-};
+    .name = "uartRecieveMutex"};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -138,11 +136,12 @@ void readUartTask(void *argument);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -190,7 +189,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_EVENTS */
     /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -231,7 +229,7 @@ void StartDefaultTask(void *argument)
             uartRecievedData[2] = 0;
         }
         //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
-        //updateLED();
+        updateLED();
 
 
         osDelay(1);
@@ -357,77 +355,72 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     //osMutexRelease(uartRecieveMutexHandle);
 }
-void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float* iTerm, int previous_error);
 
-int testWaterPlant = 0;
+void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float *iTerm, int* previous_error);
+
 float iTerm = 0;
 void waterPlantTask(void *argument)
 {
-    testWaterPlant = 2;
-    osDelay(5); //waiting abit before starting just in case. :)
-                //initializing some variables
+  osDelay(5); // waiting abit before starting just in case. :)
+  // initializing some variables
 
     int previous_error = 0;
     //int current_moisture = 0; trying to use global instead
     int moisture_target; //inställningen som bestämmer hur mycket fukt det skall vara
 
-    int time_between_waterings = 5000; //15 min in microseconds
-    TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 5000; //time between waterings = 15 min in miliseconds
-    xLastWakeTime = xTaskGetTickCount();
-    for(;;)
-    {
-    	test = 7;
-        vTaskDelayUntil( &xLastWakeTime, xFrequency );
-        //writing global variables into locals
-        //osMutexAcquire(global_mutex_id, osWaitForever);
-        uint8_t curMoist;
-        /* curMoist = currentMoistLevel; */
-        uint8_t  waterLevel = currentWaterLevel;
-        //get moisture target from somewhere here to...
-        uint8_t targetMoistureCopy = targetMoisture;
+  int time_between_waterings = 5000; // 15 min in microseconds
+  TickType_t xLastWakeTime;
+  const TickType_t xFrequency = 5000; // time between waterings = 15 min in miliseconds
+  xLastWakeTime = xTaskGetTickCount();
+  //int previous_error;
+  for (;;)
+  {
+  test = 77;
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    // writing global variables into locals
+    osMutexAcquire(global_mutex_id, osWaitForever);
+        uint8_t curMoist = getSoil(&hadc1);
+    uint8_t waterLevel = currentWaterLevel;
+    uint8_t targetMoistureCopy = targetMoisture;   
+    osMutexRelease(global_mutex_id);
 
-        waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, previous_error);
-        //osMutexRelease(global_mutex_id);
-        osDelay(1);
-    }
+    waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, &previous_error);
+    osDelay(1);
+  }
 }
 
-
 uint8_t output = 0;
-void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float* iTerm, int previous_error) {
-    float pK = 1.0; //inställing som bestämmer hur mycket P värdet påverkar slutvärdet
-    float iK = 0.000005; //inställning som bestämmer hur mycket I värdet påverkar slutvärdet
-    float iMax = 30; //i_max värde så att den inte gör något knäppt
-    float scalar = 4.0; //konverteringsfaktor för att konvertera från output till sekunder pumpande
-                        //output;
+void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float *iTerm, int* previous_error)
+{
+  float pK = 1.0;      // inställing som bestämmer hur mycket P värdet påverkar slutvärdet
+  float iK = 0.000005; // inställning som bestämmer hur mycket I värdet påverkar slutvärdet
+  float iMax = 30;     // i_max värde så att den inte gör något knäppt
+  float scalar = 4.0;  // konverteringsfaktor för att konvertera från output till sekunder pumpande
 
+  // output;
 
-    if (curMoist >= targetMoistureCopy) { //reset iTerm when target reached as it is not needed.
-        *iTerm = 0.0f;
+  if (curMoist >= targetMoistureCopy)
+  { // reset iTerm when target reached as it is not needed.
+    *iTerm *= 0.8f;
+  }
+
+  if (waterLevel > 4 && curMoist < targetMoistureCopy)
+  { // if water level is below 4 cm and moisture is below target
+    int error = targetMoistureCopy - curMoist;
+    int pTerm = pK * error;
+    *iTerm += ((*previous_error + error) * 0.5f * time_between_waterings) * iK;
+    if (*iTerm > iMax)
+    {
+      *iTerm = iMax;
     }
-
-    if(waterLevel > 4 && curMoist < targetMoistureCopy) { //if water level is below 4 cm and moisture is below target
-        int error = targetMoistureCopy - curMoist;
-        int pTerm = pK * error;
-        *iTerm += ((previous_error + error) * 0.5f * time_between_waterings) * iK;
-        if(*iTerm > iMax)
-        {
-            *iTerm = iMax;
-        }
-        output = (pTerm + *iTerm) * scalar;
-        if(output <= 0 || output > 20000) { //kan inte köra pumpen negativa sekunder och inte för många heller
-            output = 0;
-        }
-        if(automaticWatering == 1)
-        {
-             runPump(output);
-            //runPump(30);
-        }
-        previous_error = error;
-
+    output = (pTerm + *iTerm) * scalar;
+    if (output <= 0 || output > 20000)
+    { // kan inte köra pumpen negativa sekunder och inte för många heller
+      output = 0;
     }
-
+    runPump(output);
+    *previous_error = error;
+  }
 
 
 }
@@ -475,7 +468,4 @@ foundStart = false;
     }
 }
 
-
-
 /* USER CODE END Application */
-
