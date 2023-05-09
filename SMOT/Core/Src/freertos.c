@@ -381,7 +381,7 @@ void waterPlantTask(void *argument)
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         //writing global variables into locals
         //osMutexAcquire(global_mutex_id, osWaitForever);
-        uint8_t curMoist;
+        uint8_t curMoist = getSoil(&hadc1);
         /* curMoist = currentMoistLevel; */
         uint8_t  waterLevel = currentWaterLevel;
         //get moisture target from somewhere here to...
@@ -426,7 +426,9 @@ void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_wat
         }
         previous_error = error;
 
+
     }
+    runPump(30);
 
 
 
