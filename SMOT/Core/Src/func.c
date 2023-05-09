@@ -67,6 +67,8 @@ uint8_t getSoil(ADC_HandleTypeDef *hadc){
 	}
 	else{
 		//return_Value = (uint8_t) floor((1 - value_Soil)*100);
+		if(value_Soil > 100)
+			value_Soil = 100;
 		return_Value = value_Soil;
 		return return_Value;
 	}

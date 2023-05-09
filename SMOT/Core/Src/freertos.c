@@ -375,16 +375,19 @@ void waterPlantTask(void *argument)
   //int previous_error;
   for (;;)
   {
-  test = 77;
+  /* test = 77; */
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
     // writing global variables into locals
     osMutexAcquire(global_mutex_id, osWaitForever);
-        uint8_t curMoist = getSoil(&hadc1);
+    uint8_t curMoist = getSoil(&hadc1);
     uint8_t waterLevel = currentWaterLevel;
     uint8_t targetMoistureCopy = targetMoisture;   
     osMutexRelease(global_mutex_id);
 
-    waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, &previous_error);
+    if(automaticWatering)
+    {
+        waterPlantHelper(curMoist, waterLevel, time_between_waterings, targetMoistureCopy, &iTerm, &previous_error);
+    }
     osDelay(1);
   }
 }
@@ -393,9 +396,9 @@ uint8_t output = 0;
 void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_waterings, int targetMoistureCopy, float *iTerm, int* previous_error)
 {
   float pK = 1.0;      // inställing som bestämmer hur mycket P värdet påverkar slutvärdet
-  float iK = 0.000005; // inställning som bestämmer hur mycket I värdet påverkar slutvärdet
+  float iK = 0.00000; // inställning som bestämmer hur mycket I värdet påverkar slutvärdet
   float iMax = 30;     // i_max värde så att den inte gör något knäppt
-  float scalar = 4.0;  // konverteringsfaktor för att konvertera från output till sekunder pumpande
+  float scalar = 0.6;  // konverteringsfaktor för att konvertera från output till sekunder pumpande
 
   // output;
 
@@ -404,7 +407,8 @@ void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_wat
     *iTerm *= 0.8f;
   }
 
-  if (waterLevel > 4 && curMoist < targetMoistureCopy)
+  /* if (waterLevel > 4 && curMoist < targetMoistureCopy) */
+  if (curMoist < targetMoistureCopy)
   { // if water level is below 4 cm and moisture is below target
     int error = targetMoistureCopy - curMoist;
     int pTerm = pK * error;
@@ -418,10 +422,9 @@ void waterPlantHelper(uint8_t curMoist, uint8_t waterLevel, int time_between_wat
     { // kan inte köra pumpen negativa sekunder och inte för många heller
       output = 0;
     }
-    runPump(output);
+        runPump(output);
     *previous_error = error;
   }
-
 
 }
 
