@@ -206,7 +206,7 @@ void StartDefaultTask(void *argument)
 
     uartDataToSend[6] = 127;
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 200;
+    const TickType_t xFrequency = 75;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
@@ -266,7 +266,7 @@ void readSensor(void *argument)
 {
   /* USER CODE BEGIN readSensor */
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 300;
+    const TickType_t xFrequency = 10;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     /* Infinite loop */
@@ -322,7 +322,7 @@ void readUartTask(void *argument)
   /* USER CODE BEGIN readUartTask */
 
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 200;
+    const TickType_t xFrequency = 5;
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
     bool readyForTrigger = true;
@@ -333,11 +333,13 @@ void readUartTask(void *argument)
         vTaskDelayUntil( &xLastWakeTime, xFrequency );
         //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
         uartParser();
+        osMutexAcquire(global_mutex_id, osWaitForever);
         targetMoisture = uartRecievedData[0];
-        //osMutexAcquire(global_mutex_id, osWaitForever);
+
         pumpSeconds = uartRecievedData[1];
-        //osMutexRelease(global_mutex_id);
+
         pumpTrigger = uartRecievedData[2];
+        osMutexRelease(global_mutex_id);
         if(pumpTrigger == 1 && readyForTrigger)
         {
             manualWatering = 1;
@@ -378,9 +380,9 @@ void waterPlantTask(void *argument)
     //int current_moisture = 0; trying to use global instead
     int moisture_target; //inställningen som bestämmer hur mycket fukt det skall vara
 
-  int time_between_waterings = 5000; // 15 min in microseconds
+  int time_between_waterings = 10000; // 15 min in microseconds
   TickType_t xLastWakeTime;
-  const TickType_t xFrequency = 5000; // time between waterings = 15 min in miliseconds
+  const TickType_t xFrequency = 10000; // time between waterings = 15 min in miliseconds
   xLastWakeTime = xTaskGetTickCount();
   //int previous_error;
   for (;;)
