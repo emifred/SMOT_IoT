@@ -71,42 +71,43 @@ void uartParser();
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for suspendButton */
 osThreadId_t suspendButtonHandle;
 const osThreadAttr_t suspendButton_attributes = {
-    .name = "suspendButton",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityRealtime,
+  .name = "suspendButton",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for readSensors */
 osThreadId_t readSensorsHandle;
 const osThreadAttr_t readSensors_attributes = {
-    .name = "readSensors",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
+  .name = "readSensors",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for modeSelect */
 osThreadId_t modeSelectHandle;
 const osThreadAttr_t modeSelect_attributes = {
-    .name = "modeSelect",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
+  .name = "modeSelect",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for readUartRXBuffe */
 osThreadId_t readUartRXBuffeHandle;
 const osThreadAttr_t readUartRXBuffe_attributes = {
-    .name = "readUartRXBuffe",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+  .name = "readUartRXBuffe",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for uartRecieveMutex */
 osMutexId_t uartRecieveMutexHandle;
 const osMutexAttr_t uartRecieveMutex_attributes = {
-    .name = "uartRecieveMutex"};
+  .name = "uartRecieveMutex"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -137,12 +138,11 @@ void readUartTask(void *argument);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
-void MX_FREERTOS_Init(void)
-{
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -190,6 +190,7 @@ void MX_FREERTOS_Init(void)
   /* USER CODE BEGIN RTOS_EVENTS */
     /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
+
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -471,3 +472,4 @@ foundStart = false;
 }
 
 /* USER CODE END Application */
+

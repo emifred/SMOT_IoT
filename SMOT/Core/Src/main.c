@@ -209,21 +209,28 @@ int _write(int file, char * ptr, int len)
     return len;
 
 }
-uint8_t count = 1;
+volatile uint8_t count = 1;
+uint8_t test1 = 1;
 bool state = true;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+
 	if(GPIO_Pin == GPIO_PIN_0 && state == true){
-		turnOnLed(count);
-		count++;
-		HAL_TIM_Base_Start_IT(&htim3);
-		state = false;
+
 		if(count == 4){
 			count = 1;
 		}
-	}else{
+		turnOnLed(count);
+		HAL_TIM_Base_Start_IT(&htim3);
+		count++;
+		state = false;
+
+	}
+
+	else{
 		__NOP();
 	}
+
 
 }
 
@@ -274,7 +281,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     if(htim == &htim3){
     	if(HAL_GPIO_ReadPin(MODE_GPIO_Port, MODE_Pin) == GPIO_PIN_RESET){
-    			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_0);
+    			HAL_GPIO_TogglePin(MODE_GPIO_Port, MODE_Pin);
     			state = true;
     			HAL_TIM_Base_Stop_IT(&htim3);
     		}
