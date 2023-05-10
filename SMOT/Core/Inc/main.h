@@ -54,6 +54,8 @@ extern I2C_HandleTypeDef hi2c1;
 
 extern TIM_HandleTypeDef htim1;
 
+extern TIM_HandleTypeDef htim3;
+
 extern UART_HandleTypeDef huart1;
 /* USER CODE END EC */
 
@@ -70,10 +72,12 @@ void delay_us (uint16_t us);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define MODE_BUTT_Pin GPIO_PIN_0
-#define MODE_BUTT_GPIO_Port GPIOC
+#define MODE_Pin GPIO_PIN_0
+#define MODE_GPIO_Port GPIOC
+#define MODE_EXTI_IRQn EXTI0_IRQn
 #define SUSPEND_Pin GPIO_PIN_1
 #define SUSPEND_GPIO_Port GPIOC
+#define SUSPEND_EXTI_IRQn EXTI1_IRQn
 #define PUMP_Pin GPIO_PIN_2
 #define PUMP_GPIO_Port GPIOC
 #define TEMP_HUM_Pin GPIO_PIN_3

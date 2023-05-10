@@ -27,9 +27,9 @@ uint8_t motorRunning = 0;
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
 #define maxWaterLevelCM 2
-uint8_t LOW_LED;
-uint8_t MED_LED;
-uint8_t HIGH_LED;
+uint8_t LOW_LED = 20;
+uint8_t MED_LED = 40;
+uint8_t HIGH_LED = 60;
 
 
 void setMoisture(uint8_t data)
