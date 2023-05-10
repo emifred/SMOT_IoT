@@ -67,6 +67,8 @@ uint8_t getSoil(ADC_HandleTypeDef *hadc){
 	}
 	else{
 		//return_Value = (uint8_t) floor((1 - value_Soil)*100);
+		if(value_Soil > 100)
+			value_Soil = 100;
 		return_Value = value_Soil;
 		return return_Value;
 	}
@@ -180,8 +182,7 @@ void updateLED()
 
 void runPump (uint8_t time)
 {
-	HAL_TIM_Base_Start_IT(&htim16);
-	HAL_GPIO_WritePin(PUMP_GPIO_Port, PUMP_Pin, GPIO_PIN_SET);
+
     if(manualWatering == 1)
     {
 	    pumpSeconds = time;
@@ -189,6 +190,8 @@ void runPump (uint8_t time)
     {
 	    pumpSecondsAutomatic = time;
     }
+    HAL_TIM_Base_Start_IT(&htim16);
+    	HAL_GPIO_WritePin(PUMP_GPIO_Port, PUMP_Pin, GPIO_PIN_SET);
 	motorRunning = 1;
 
 }
