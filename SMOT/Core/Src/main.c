@@ -300,14 +300,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     	if(HAL_GPIO_ReadPin(SUSPEND_GPIO_Port, SUSPEND_Pin) == GPIO_PIN_RESET){
     	    			//HAL_GPIO_TogglePin(MODE_GPIO_Port, MODE_Pin);
     	    	state = true;
-    	    	if(suspend == 1){
-    	    		suspend = 0;
-    	    		xTaskResumeAll();
-    	    	}
-    	    	if(suspend == 0){
-    	    	   suspend = 1;
-    	    	   vTaskSuspendAll();
-    	    	}
+    	    	calibrateUS();
     	    	HAL_TIM_Base_Stop_IT(&htim3);
     	    }
     }
