@@ -15,25 +15,27 @@ uint8_t testSoil;
 /* bool testMoistureFunction(); */
 
 void Test_Program(){
-    bool waterLevelTestVar = false;
-    bool moistureTestVar = false;
-    bool uartTestVar = false;
+   // bool waterLevelTestVar = false;
+    //bool moistureTestVar = false;
+   // bool uartTestVar = false;
+	//HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
 
-
-    uint8_t waterLevel1 = getWaterLevel();
-    waterLevelTestVar = testWaterLevelFunction();
-    moistureTestVar = testMoistureLevelFunction();
-    for(int i = 0; i < 4; i++)
-    {
-    uartTestVar = testUartSend();
-    HAL_Delay(1000);
-}
+   // uint8_t waterLevel1 = getWaterLevel();
+    //waterLevelTestVar = testWaterLevelFunction();
+    //moistureTestVar = testMoistureLevelFunction();
+    //for(int i = 0; i < 4; i++)
+    //{
+    //uartTestVar = testUartSend();
+    //HAL_Delay(1000);
+//}
 
     uint8_t testSoil = 255;
     while(1)
     {
-        testSoil = getSoil(&hadc1);
-        HAL_Delay(100);
+        //testSoil = getSoil(&hadc1);
+        //HAL_Delay(100);
         ledTest();
     }
 
