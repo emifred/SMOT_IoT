@@ -62,6 +62,7 @@ uint8_t targetMoisture = 0;
 // uint8_t pumpTime = 0;
 uint8_t pumpTrigger = 0;
 uint8_t test = 1;
+uint8_t suspend = 0;
 
 void waterPlantTask(void *argument);
 void uartParser();
@@ -231,7 +232,7 @@ void StartDefaultTask(void *argument)
             //uartRecievedData[2] = 0;
         }
         //osMutexAcquire(uartRecieveMutexHandle, osWaitForever);
-        updateLED();
+
 
 
         osDelay(1);
@@ -280,7 +281,7 @@ void readSensor(void *argument)
         currentMoistLevel = 4;
 
         currentWaterLevel = getWaterPercent();
-        updateLED();
+
 
         motorRunning = (uint8_t) HAL_GPIO_ReadPin(PUMP_GPIO_Port, PUMP_Pin);
 

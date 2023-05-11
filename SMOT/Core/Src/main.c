@@ -210,25 +210,27 @@ int _write(int file, char * ptr, int len)
     return len;
 
 }
-volatile uint8_t count = 1;
 uint8_t test1 = 1;
 bool state = true;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 
 	if(GPIO_Pin == GPIO_PIN_0 && state == true){
+		turnOnLed(4);
 
-		if(count == 4){
-			count = 1;
-		}
-		turnOnLed(count);
 		HAL_TIM_Base_Start_IT(&htim3);
-		count++;
 		state = false;
 
 	}
+	if(GPIO_Pin == GPIO_PIN_1 && state == true){
+
+			HAL_TIM_Base_Start_IT(&htim3);
+			state = false;
+
+		}
 
 	else{
+
 		__NOP();
 	}
 
@@ -289,10 +291,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     if(htim == &htim3){
     	if(HAL_GPIO_ReadPin(MODE_GPIO_Port, MODE_Pin) == GPIO_PIN_RESET){
-    			HAL_GPIO_TogglePin(MODE_GPIO_Port, MODE_Pin);
+    			//HAL_GPIO_TogglePin(MODE_GPIO_Port, MODE_Pin);
     			state = true;
+    			updateLED(targetMoisture);
     			HAL_TIM_Base_Stop_IT(&htim3);
+
     		}
+    	if(HAL_GPIO_ReadPin(SUSPEND_GPIO_Port, SUSPEND_Pin) == GPIO_PIN_RESET){
+    	    			//HAL_GPIO_TogglePin(MODE_GPIO_Port, MODE_Pin);
+    	    	state = true;
+    	    	if(suspend == 1)
+    	    		suspend = 0;
+    	    	if(suspend == 0)
+    	    	   suspend = 1;
+    	    	HAL_TIM_Base_Stop_IT(&htim3);
+    	    }
     }
   /* USER CODE END Callback 1 */
 }

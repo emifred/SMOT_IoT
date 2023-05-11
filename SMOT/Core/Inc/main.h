@@ -38,6 +38,8 @@ extern uint8_t pumpTimerCount;
 extern uint8_t manualWatering;
 extern uint8_t automaticWatering;
 extern uint8_t motorRunning;
+extern uint8_t targetMoisture;
+extern uint8_t suspend;
 
 /* USER CODE END Includes */
 

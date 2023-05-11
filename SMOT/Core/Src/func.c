@@ -161,20 +161,26 @@ void turnOnLed(uint8_t LED)
 			HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
 			break;
 
+
+	case 4:
+		HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
+		break;
 		}
 }
 
 uint8_t ledCase;
-void updateLED()
+void updateLED(uint8_t target)
 {
-	uint8_t soilValue = getSoil(&hadc1);
-	if(soilValue < getMoistLed(&LOW_LED)){
+
+	if(target < LOW_LED){
 		ledCase = 1;
 	}
-	if(soilValue < getMoistLed(&MED_LED)){
+	else if(target < MED_LED){
 			ledCase = 2;
 		}
-	if(soilValue < getMoistLed(&HIGH_LED)){
+	else if(target < HIGH_LED){
 			ledCase = 3;
 		}
 	turnOnLed(ledCase);
