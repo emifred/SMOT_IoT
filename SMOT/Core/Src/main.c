@@ -293,7 +293,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     	if(HAL_GPIO_ReadPin(MODE_GPIO_Port, MODE_Pin) == GPIO_PIN_RESET){
     			//HAL_GPIO_TogglePin(MODE_GPIO_Port, MODE_Pin);
     			state = true;
-    			updateLED(targetMoisture);
+    			updateLED();
     			HAL_TIM_Base_Stop_IT(&htim3);
 
     		}

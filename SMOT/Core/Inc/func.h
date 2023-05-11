@@ -12,7 +12,7 @@
 uint8_t getSoil(ADC_HandleTypeDef *hadc);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 float getWaterLevel(void);
-void updateLED(uint8_t target);
+
 void setMoisture(uint8_t data);
 void setMoistLed(uint8_t *LED, uint8_t data);
 uint8_t getMoistLed(uint8_t *LED);

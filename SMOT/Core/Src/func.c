@@ -27,9 +27,7 @@ uint8_t motorRunning = 0;
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
 #define maxWaterLevelCM 2
-uint8_t LOW_LED = 20;
-uint8_t MED_LED = 40;
-uint8_t HIGH_LED = 60;
+
 
 
 void setMoisture(uint8_t data)
@@ -152,13 +150,13 @@ void turnOnLed(uint8_t LED)
 			break;
 		case 2:
 			HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_RESET);
 			break;
 		case 3:
 			HAL_GPIO_WritePin(HIGH_LED_GPIO_Port, HIGH_LED_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(MED_LED_GPIO_Port, MED_LED_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(LOW_LED_GPIO_Port, LOW_LED_Pin, GPIO_PIN_SET);
 			break;
 
 
@@ -170,21 +168,7 @@ void turnOnLed(uint8_t LED)
 		}
 }
 
-uint8_t ledCase;
-void updateLED(uint8_t target)
-{
 
-	if(target < LOW_LED){
-		ledCase = 1;
-	}
-	else if(target < MED_LED){
-			ledCase = 2;
-		}
-	else if(target < HIGH_LED){
-			ledCase = 3;
-		}
-	turnOnLed(ledCase);
-}
 
 void runPump (uint8_t time)
 {
