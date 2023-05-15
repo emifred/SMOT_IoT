@@ -71,7 +71,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void delay_us (uint16_t us);
-void updateLED();
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

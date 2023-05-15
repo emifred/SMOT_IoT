@@ -13,6 +13,7 @@
 void delay_us(uint16_t us);
 
 
+
 uint16_t Distance;
 uint32_t IC_Val1 = 0;
 uint32_t IC_Val2 = 0;
@@ -20,13 +21,13 @@ uint32_t Difference = 0;
 uint8_t Is_First_Captured = 0;  // is the first value captured ?
 uint8_t setMoist;
 uint8_t waterWarning;
-uint8_t emptyWater = 7;
+uint8_t emptyWater = 10;
 uint8_t motorRunning = 0;
 
 
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
-#define maxWaterLevelCM 2
+uint8_t maxWaterLevelCM = 2;
 
 
 
@@ -136,6 +137,10 @@ uint8_t getWaterPercent()
 {
 	float waterLevelPercentage;
 	waterLevelPercentage = (1 - ((getWaterLevel()/emptyWater)))*100;
+	if(getWaterLevel() <= maxWaterLevelCM){
+		waterLevelPercentage = 100;
+		return waterLevelPercentage;
+	}else
 	return waterLevelPercentage;
 
 }
@@ -196,10 +201,14 @@ void stopPump ()
 //{
 //}
 
-
 void calibrateUS()
 {
+	if(getWaterLevel() < maxWaterLevelCM){
 
-	emptyWater = getWaterLevel() - maxWaterLevelCM;
+	}
+	else
+		emptyWater = getWaterLevel() - maxWaterLevelCM;
 
 }
+
+

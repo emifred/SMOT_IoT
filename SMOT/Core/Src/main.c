@@ -79,6 +79,7 @@ uint8_t automaticWatering = 0;
 
 uint8_t pumpTimerCount = 0;
 
+uint8_t testTimer= 0;
 /* USER CODE END 0 */
 
 /**
@@ -217,7 +218,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	if(GPIO_Pin == GPIO_PIN_0 && state == true){
 		turnOnLed(4);
-
+			testTimer++;
 		HAL_TIM_Base_Start_IT(&htim3);
 		state = false;
 

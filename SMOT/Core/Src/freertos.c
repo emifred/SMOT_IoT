@@ -64,13 +64,15 @@ uint8_t pumpTrigger = 0;
 uint8_t test = 1;
 uint8_t suspend = 0;
 
+uint8_t LOW_LED = 20;
+uint8_t MED_LED = 40;
+uint8_t HIGH_LED = 60;
+uint8_t ledCase = 1;
+
 void waterPlantTask(void *argument);
 void uartParser();
 
 
-uint8_t LOW_LED = 20;
-uint8_t MED_LED = 40;
-uint8_t HIGH_LED = 60;
 // uint8_t motorRunning = 0;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
@@ -490,17 +492,17 @@ foundStart = false;
         }
     }
 }
-uint8_t ledCase;
+
 void updateLED()
 {
 
-	if(targetMoisture < LOW_LED){
+	if(targetMoisture <= LOW_LED){
 		ledCase = 1;
 	}
-	else if(targetMoisture < MED_LED){
+	else if( LOW_LED <= targetMoisture && targetMoisture <= HIGH_LED){
 			ledCase = 2;
 		}
-	else if(targetMoisture < HIGH_LED){
+	else if(HIGH_LED <= targetMoisture){
 			ledCase = 3;
 		}
 	turnOnLed(ledCase);
