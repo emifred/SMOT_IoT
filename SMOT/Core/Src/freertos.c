@@ -390,9 +390,9 @@ void waterPlantTask(void *argument)
     //int current_moisture = 0; trying to use global instead
     int moisture_target; //inställningen som bestämmer hur mycket fukt det skall vara
 
-  int time_between_waterings = 10000; // 15 min in microseconds
+  int time_between_waterings = 5000; // 15 min in microseconds
   TickType_t xLastWakeTime;
-  const TickType_t xFrequency = 10000; // time between waterings = 15 min in miliseconds
+  const TickType_t xFrequency = 5000; // time between waterings = 15 min in miliseconds
   xLastWakeTime = xTaskGetTickCount();
   //int previous_error;
   for (;;)
